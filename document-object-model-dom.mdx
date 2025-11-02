@@ -1,0 +1,847 @@
+---
+title: "Document Object Model (DOM)"
+description: "Everything about DOM"
+publishedAt: "2025-11-02"
+isPublished: true
+tags:
+  - javascript
+---
+
+## 1. What is the DOM?
+
+- The DOM represents the HTML structure of a page as a tree, where each part (tag, attribute, text) becomes a JavaScript object.
+- It’s the bridge between JavaScript and the rendered page.
+- It lets JavaScript interact with webpages.
+- Through the DOM, JavaScript can:
+  - Select and access elements
+  - Modify content and styles
+  - Handle user events
+  - Dynamically change and manipulate the page structure in real-time.
+
+---
+
+## 2. Structure & Traversal
+
+- HTML elements (tags) become nodes in the DOM tree.
+- `document` is the root object.
+- Traverse the structure using properties like `.parentElement`, `.children`, `.nextElementSibling`, and `.previousElementSibling` to move through parents, children, and siblings efficiently.
+
+**Example: Traversing the DOM**
+
+```javascript
+const element = document.querySelector(".my-element");
+
+// Get parent
+const parent = element.parentElement;
+
+// Get children
+const children = element.children;
+
+// Get siblings
+const nextSibling = element.nextElementSibling;
+const prevSibling = element.previousElementSibling;
+
+// Traverse up to find a specific ancestor
+function findAncestor(element, className) {
+  while (element && !element.classList.contains(className)) {
+    element = element.parentElement;
+  }
+  return element;
+}
+```
+
+---
+
+## 3. Selecting Elements – How to Access the DOM
+
+- **By ID:**  
+  Use `getElementById('id')` for unique access. Returns a single element or null.
+- **By Class or Tag:**  
+  Use `getElementsByClassName('class')` or `getElementsByTagName('tag')` for collections. These return live HTMLCollections that update automatically.
+- **CSS Selectors:**  
+  `querySelector` and `querySelectorAll` let you select elements exactly as you would with CSS. `querySelectorAll` returns a static NodeList.
+
+Remember: _IDs should be unique. Classes can group elements._
+
+_Pro Tip:_  
+Use IDs for single elements, classes for groups. Prefer `querySelector` for modern, flexible selection.
+
+**Examples: Selecting Elements**
+
+```javascript
+// By ID
+const header = document.getElementById("main-header");
+
+// By class (returns live collection)
+const buttons = document.getElementsByClassName("btn");
+
+// By tag (returns live collection)
+const paragraphs = document.getElementsByTagName("p");
+
+// CSS selectors
+const firstButton = document.querySelector(".btn"); // First match
+const allButtons = document.querySelectorAll(".btn"); // All matches
+
+// Complex selectors
+const nestedElement = document.querySelector("div.container > ul > li.active");
+```
+
+---
+
+## 4. DOM Manipulation
+
+- **Text and HTML:**
+  - Update element content with `textContent`, `innerText`, or `innerHTML`.
+- **Styles:**
+  - Change styles through the `.style` property (e.g., `element.style.backgroundColor`).
+  - For multiple styles, use `element.style.cssText` or `classList` for classes.
+- **Creating & Removing:**
+  - Create elements with `document.createElement`.
+  - Insert them: `appendChild()`, `prepend()`, `insertBefore()`, `replaceChild()`.
+  - Remove with `remove()` or `removeChild()`.
+- **Attributes:**
+  - Set/get attributes with `setAttribute()` and `getAttribute()`.
+
+**Examples: DOM Manipulation**
+
+```javascript
+const div = document.querySelector(".content");
+
+// Text content
+div.textContent = "New text content"; // Safe, no HTML parsing
+div.innerText = "Visible text only"; // Respects CSS visibility
+div.innerHTML = "<strong>Bold text</strong>"; // Parses HTML
+
+// Styles
+div.style.color = "red";
+div.style.fontSize = "20px";
+// Or batch styles
+div.style.cssText = "color: blue; font-size: 18px;";
+
+// Classes
+div.classList.add("active");
+div.classList.remove("hidden");
+div.classList.toggle("visible");
+
+// Creating elements
+const newElement = document.createElement("p");
+newElement.textContent = "New paragraph";
+div.appendChild(newElement);
+
+// Inserting at specific position
+const reference = document.querySelector(".reference");
+div.insertBefore(newElement, reference);
+
+// Attributes
+div.setAttribute("data-id", "123");
+const id = div.getAttribute("data-id");
+```
+
+---
+
+## 5. Event Handling
+
+- Make pages interactive by attaching handlers with `addEventListener`:
+
+  - Common events: `click`, `keydown`, `input`, `submit`, `mouseover`, etc.
+  - Access details with the event object (`event`): `event.target`, `event.type`, `event.key`, etc.
+  - Use `event.preventDefault()` to override default browser behavior when needed (e.g., form submissions).
+  - Remove listeners with `removeEventListener` to prevent memory leaks.
+
+  ```javascript
+  element.addEventListener("click", function (event) {
+    // Your code here
+  });
+  ```
+
+- **Event Object Properties:**
+  - `event.target`: The element that triggered the event.
+  - `event.currentTarget`: The element the listener is attached to.
+  - `event.type`: The type of event.
+  - `event.preventDefault()`: Prevents default action.
+  - `event.stopPropagation()`: Stops event bubbling.
+
+**Examples: Event Handling**
+
+```javascript
+const button = document.querySelector(".submit-btn");
+
+// Click event
+button.addEventListener("click", function (event) {
+  console.log("Button clicked!");
+  event.preventDefault(); // Prevent form submission if inside form
+});
+
+// Input event
+const input = document.querySelector("input");
+input.addEventListener("input", function (event) {
+  console.log("Input value:", event.target.value);
+});
+
+// Keydown event
+document.addEventListener("keydown", function (event) {
+  if (event.key === "Enter") {
+    console.log("Enter pressed");
+  }
+});
+
+// Remove event listener
+function handleClick() {
+  console.log("Clicked once");
+  button.removeEventListener("click", handleClick);
+}
+button.addEventListener("click", handleClick);
+```
+
+---
+
+## 6. Advanced DOM Concepts
+
+- **Event Propagation:**
+
+  - **Bubbling:** Events bubble up from the target element to the root.
+  - **Capturing:** Events are captured from the root down to the target (use `addEventListener` with `true` as third parameter).
+  - Control with `event.stopPropagation()` and `event.stopImmediatePropagation()`.
+
+- **Event Delegation:**
+
+  - Attach a single event listener to a parent element to handle events on multiple child elements.
+  - Useful for dynamically added elements.
+  - Check `event.target` to identify the actual clicked element.
+
+- **DOM Ready States:**
+
+  - `DOMContentLoaded`: Fired when HTML document has been completely loaded and parsed.
+  - `load`: Fired when all resources (images, stylesheets) are loaded.
+  - Use `document.readyState` to check current state.
+
+- **Cloning Elements:**
+
+  - Use `element.cloneNode(deep)` to clone an element.
+  - `deep=true` clones the element and all its descendants.
+
+- **Differences between Content Properties:**
+
+  - `innerHTML`: Gets/sets HTML content as a string.
+  - `innerText`: Gets/sets text content, ignoring HTML tags.
+  - `textContent`: Gets/sets text content, including text in hidden elements.
+
+- **Attributes vs Properties:**
+
+  - Attributes are in the HTML markup (e.g., `id`, `class`).
+  - Properties are on the DOM object (e.g., `element.id`, `element.className`).
+  - Use `getAttribute()` and `setAttribute()` for attributes, direct property access for properties.
+
+- **Shadow DOM:**
+
+  - Encapsulates DOM subtree, isolating styles and scripts.
+  - Used in web components for better modularity.
+
+- **Performance Tips:**
+  - Minimize DOM manipulations; batch changes.
+  - Use `DocumentFragment` for multiple insertions.
+  - Cache element references.
+  - Avoid excessive reflows and repaints.
+
+**Examples: Advanced Concepts**
+
+```javascript
+// Event Propagation
+const parent = document.querySelector(".parent");
+const child = document.querySelector(".child");
+
+// Bubbling (default)
+child.addEventListener("click", () => console.log("Child clicked"));
+parent.addEventListener("click", () => console.log("Parent clicked"));
+
+// Capturing
+parent.addEventListener("click", () => console.log("Parent captured"), true);
+
+// Stop propagation
+child.addEventListener("click", (event) => {
+  console.log("Child clicked");
+  event.stopPropagation(); // Parent won't fire
+});
+
+// Event Delegation
+const list = document.querySelector("ul");
+list.addEventListener("click", function (event) {
+  if (event.target.tagName === "LI") {
+    console.log("List item clicked:", event.target.textContent);
+  }
+});
+
+// DOM Ready
+document.addEventListener("DOMContentLoaded", function () {
+  console.log("DOM fully loaded");
+});
+
+// Cloning
+const original = document.querySelector(".original");
+const clone = original.cloneNode(true); // Deep clone
+document.body.appendChild(clone);
+
+// Attributes vs Properties
+const input = document.querySelector("input");
+input.setAttribute("value", "hello"); // Sets attribute
+console.log(input.getAttribute("value")); // 'hello'
+input.value = "world"; // Sets property
+console.log(input.value); // 'world'
+
+// Shadow DOM
+const host = document.querySelector(".host");
+const shadow = host.attachShadow({ mode: "open" });
+shadow.innerHTML = "<style>p { color: red; }</style><p>Shadow content</p>";
+```
+
+---
+
+## 7. Common Interview Questions
+
+- What is the difference between `getElementById` and `querySelector`?
+- Explain event bubbling and how to stop it.
+- How does event delegation work?
+- What are the differences between `innerHTML`, `innerText`, and `textContent`?
+- How do you clone a DOM element?
+- What is the Shadow DOM and why is it useful?
+- How can you improve DOM manipulation performance?
+
+---
+
+## 8. Answers to Common Interview Questions
+
+- **What is the difference between `getElementById` and `querySelector`?**
+
+  - `getElementById` is faster and returns a single element or null. `querySelector` uses CSS selectors and returns the first matching element.
+
+- **Explain event bubbling and how to stop it.**
+
+  - Event bubbling is when an event propagates from the target element up to the root. Stop it with `event.stopPropagation()`.
+
+- **How does event delegation work?**
+
+  - Attach an event listener to a parent element. Use `event.target` to check which child triggered the event. Efficient for dynamic elements.
+
+- **What are the differences between `innerHTML`, `innerText`, and `textContent`?**
+
+  - `innerHTML` gets/sets HTML content. `innerText` gets visible text only. `textContent` gets all text, including hidden.
+
+- **How do you clone a DOM element?**
+
+  - Use `element.cloneNode(deep)` where `deep=true` clones children too.
+
+- **What is the Shadow DOM and why is it useful?**
+
+  - Shadow DOM encapsulates a DOM subtree, isolating styles and scripts. Useful for web components to prevent style conflicts.
+
+- **How can you improve DOM manipulation performance?**
+  - Batch changes, use DocumentFragment, cache references, minimize reflows by changing styles in batches.
+
+---
+
+## 9. Additional DOM Topics
+
+- **Node Types:**
+
+  - `ELEMENT_NODE` (1), `TEXT_NODE` (3), `COMMENT_NODE` (8), `DOCUMENT_NODE` (9), etc.
+
+- **DOM vs BOM:**
+
+  - DOM is for document structure. BOM (Browser Object Model) includes `window`, `navigator`, `location`, `history`.
+
+- **Virtual DOM:**
+
+  - A lightweight copy of the real DOM used in frameworks like React for efficient updates.
+
+- **MutationObserver:**
+
+  - API to observe changes to the DOM tree.
+
+- **Custom Data Attributes:**
+
+  - Use `data-*` attributes to store custom data. Access with `element.dataset`.
+
+- **Security Considerations:**
+
+  - Avoid XSS by using `textContent` instead of `innerHTML` for user input.
+
+- **Practical Example: Creating a Dynamic List**
+
+  ```javascript
+  // Create a list item
+  const li = document.createElement("li");
+  li.textContent = "New Item";
+
+  // Append to list
+  const ul = document.querySelector("ul");
+  ul.appendChild(li);
+
+  // Event delegation example
+  ul.addEventListener("click", function (event) {
+    if (event.target.tagName === "LI") {
+      event.target.remove();
+    }
+  });
+  ```
+
+**Examples: Additional Topics**
+
+```javascript
+// Node Types
+const element = document.querySelector("div");
+console.log(element.nodeType); // 1 (ELEMENT_NODE)
+
+const textNode = element.firstChild;
+console.log(textNode.nodeType); // 3 (TEXT_NODE)
+
+// MutationObserver
+const observer = new MutationObserver(function (mutations) {
+  mutations.forEach(function (mutation) {
+    console.log("DOM changed:", mutation.type);
+  });
+});
+observer.observe(document.body, { childList: true, subtree: true });
+
+// Custom Data Attributes
+const button = document.querySelector("button");
+button.setAttribute("data-action", "save");
+console.log(button.dataset.action); // 'save'
+
+// BOM examples
+console.log(window.innerWidth); // Viewport width
+console.log(navigator.userAgent); // Browser info
+window.location.href = "https://example.com"; // Redirect
+```
+
+---
+
+## 10. Best Practices
+
+- **Memory Leaks:** Always remove event listeners when elements are removed. Use `removeEventListener`.
+- **Reflows and Repaints:** Batch DOM changes. Use `classList` instead of direct style manipulation for multiple changes.
+- **XSS Vulnerabilities:** Sanitize user input before using `innerHTML`. Prefer `textContent` or libraries like DOMPurify.
+- **Live vs Static Collections:** Remember `getElementsByTagName` returns live collections; `querySelectorAll` returns static.
+- **Event Handler Scope:** Use arrow functions or bind `this` properly in event handlers.
+- **Performance:** Cache DOM queries. Use `DocumentFragment` for bulk insertions.
+
+**Examples: Best Practices**
+
+```javascript
+// Bad: Memory leak - event listener not removed
+const button = document.createElement("button");
+button.addEventListener("click", () => console.log("clicked"));
+document.body.appendChild(button);
+// Later, when removing button, listener stays
+
+// Good: Remove listener
+function handleClick() {
+  console.log("clicked");
+}
+button.addEventListener("click", handleClick);
+// When removing
+button.removeEventListener("click", handleClick);
+document.body.removeChild(button);
+
+// Bad: Multiple reflows
+element.style.width = "100px";
+element.style.height = "100px";
+element.style.background = "red";
+
+// Good: Batch changes
+element.style.cssText = "width: 100px; height: 100px; background: red;";
+// Or use classList
+element.classList.add("styled-element");
+
+// Bad: XSS vulnerability
+const userInput = '<script>alert("hacked")</script>';
+element.innerHTML = userInput;
+
+// Good: Sanitize or use textContent
+element.textContent = userInput; // Safe
+
+// Bad: Repeated DOM queries
+for (let i = 0; i < 100; i++) {
+  document.querySelector(".item").style.color = "red";
+}
+
+// Good: Cache reference
+const item = document.querySelector(".item");
+for (let i = 0; i < 100; i++) {
+  item.style.color = "red";
+}
+
+// Good: Use DocumentFragment for bulk insertions
+const fragment = document.createDocumentFragment();
+for (let i = 0; i < 100; i++) {
+  const li = document.createElement("li");
+  li.textContent = `Item ${i}`;
+  fragment.appendChild(li);
+}
+document.querySelector("ul").appendChild(fragment);
+```
+
+---
+
+## 11. DOM Interview Coding Challenges
+
+- **Challenge 1: Event Delegation for Dynamic Elements**
+
+  - Create a todo list where clicking "Add" appends a new item. Use event delegation to handle clicks on dynamically added "Delete" buttons.
+
+- **Challenge 2: Form Validation and Submission**
+
+  - Build a form with DOM manipulation: validate inputs on submit, show errors, and prevent default submission if invalid.
+
+- **Challenge 3: Accordion Component**
+
+  - Create an accordion where only one panel is open at a time. Use DOM traversal and event handling.
+
+- **Challenge 4: Clone and Modify Elements**
+
+  - Clone a table row, modify its content, and insert it back into the table.
+
+- **Challenge 5: Modal with Shadow DOM**
+  - Implement a modal dialog using Shadow DOM for style isolation.
+
+---
+
+## 12. Solutions to Coding Challenges
+
+**Solution 1: Event Delegation for Dynamic Elements**
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Todo List</title>
+  </head>
+  <body>
+    <h1>Todo List</h1>
+    <input type="text" id="todo-input" placeholder="Enter a todo item" />
+    <button id="add-btn">Add Todo</button>
+    <ul id="todo-list"></ul>
+
+    <script>
+      const todoInput = document.getElementById("todo-input");
+      const addBtn = document.getElementById("add-btn");
+      const todoList = document.getElementById("todo-list");
+
+      // Add new todo item
+      addBtn.addEventListener("click", function () {
+        const todoText = todoInput.value.trim();
+        if (todoText) {
+          const li = document.createElement("li");
+          li.innerHTML = `${todoText} <button class="delete-btn">Delete</button>`;
+          todoList.appendChild(li);
+          todoInput.value = "";
+        }
+      });
+
+      // Event delegation for delete buttons
+      todoList.addEventListener("click", function (event) {
+        if (event.target.classList.contains("delete-btn")) {
+          event.target.parentElement.remove();
+        }
+      });
+    </script>
+  </body>
+</html>
+```
+
+**Solution 2: Form Validation and Submission**
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Form Validation</title>
+    <style>
+      .error {
+        color: red;
+        font-size: 0.8em;
+      }
+      .hidden {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Contact Form</h1>
+    <form id="contact-form">
+      <div>
+        <label for="name">Name:</label>
+        <input type="text" id="name" required />
+        <span id="name-error" class="error hidden">Name is required</span>
+      </div>
+      <div>
+        <label for="email">Email:</label>
+        <input type="email" id="email" required />
+        <span id="email-error" class="error hidden"
+          >Valid email is required</span
+        >
+      </div>
+      <div>
+        <label for="message">Message:</label>
+        <textarea id="message" required></textarea>
+        <span id="message-error" class="error hidden">Message is required</span>
+      </div>
+      <button type="submit">Submit</button>
+    </form>
+
+    <script>
+      const form = document.getElementById("contact-form");
+
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        // Clear previous errors
+        document
+          .querySelectorAll(".error")
+          .forEach((error) => error.classList.add("hidden"));
+
+        const name = document.getElementById("name").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const message = document.getElementById("message").value.trim();
+
+        let isValid = true;
+
+        // Validate name
+        if (!name) {
+          document.getElementById("name-error").classList.remove("hidden");
+          isValid = false;
+        }
+
+        // Validate email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!email || !emailRegex.test(email)) {
+          document.getElementById("email-error").classList.remove("hidden");
+          isValid = false;
+        }
+
+        // Validate message
+        if (!message) {
+          document.getElementById("message-error").classList.remove("hidden");
+          isValid = false;
+        }
+
+        if (isValid) {
+          alert("Form submitted successfully!");
+          form.reset();
+        }
+      });
+    </script>
+  </body>
+</html>
+```
+
+**Solution 3: Accordion Component**
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Accordion</title>
+    <style>
+      .accordion-item {
+        border: 1px solid #ccc;
+        margin-bottom: 5px;
+      }
+      .accordion-header {
+        background: #f0f0f0;
+        padding: 10px;
+        cursor: pointer;
+      }
+      .accordion-content {
+        display: none;
+        padding: 10px;
+      }
+      .active .accordion-content {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Accordion Component</h1>
+    <div class="accordion">
+      <div class="accordion-item">
+        <div class="accordion-header">Section 1</div>
+        <div class="accordion-content">Content for section 1</div>
+      </div>
+      <div class="accordion-item">
+        <div class="accordion-header">Section 2</div>
+        <div class="accordion-content">Content for section 2</div>
+      </div>
+      <div class="accordion-item">
+        <div class="accordion-header">Section 3</div>
+        <div class="accordion-content">Content for section 3</div>
+      </div>
+    </div>
+
+    <script>
+      const accordion = document.querySelector(".accordion");
+
+      accordion.addEventListener("click", function (event) {
+        if (event.target.classList.contains("accordion-header")) {
+          const item = event.target.parentElement;
+          const isActive = item.classList.contains("active");
+
+          // Close all items
+          document.querySelectorAll(".accordion-item").forEach((item) => {
+            item.classList.remove("active");
+          });
+
+          // Open clicked item if it wasn't active
+          if (!isActive) {
+            item.classList.add("active");
+          }
+        }
+      });
+    </script>
+  </body>
+</html>
+```
+
+**Solution 4: Clone and Modify Elements**
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Clone Table Row</title>
+  </head>
+  <body>
+    <h1>Employee Table</h1>
+    <table id="employee-table" border="1">
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Position</th>
+          <th>Salary</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>John Doe</td>
+          <td>Developer</td>
+          <td>$50,000</td>
+          <td><button class="clone-btn">Clone</button></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <script>
+      const tableBody = document.querySelector("#employee-table tbody");
+
+      tableBody.addEventListener("click", function (event) {
+        if (event.target.classList.contains("clone-btn")) {
+          const row = event.target.closest("tr");
+          const clone = row.cloneNode(true);
+
+          // Modify the cloned row
+          const cells = clone.querySelectorAll("td");
+          cells[0].textContent = cells[0].textContent + " (Copy)";
+          cells[2].textContent = "$45,000"; // Modify salary
+
+          // Insert after original row
+          row.parentNode.insertBefore(clone, row.nextSibling);
+        }
+      });
+    </script>
+  </body>
+</html>
+```
+
+**Solution 5: Modal with Shadow DOM**
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Modal with Shadow DOM</title>
+    <style>
+      .modal-host {
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1000;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Shadow DOM Modal</h1>
+    <button id="open-modal">Open Modal</button>
+    <div class="modal-host" id="modal-host"></div>
+
+    <script>
+      const openBtn = document.getElementById("open-modal");
+      const modalHost = document.getElementById("modal-host");
+
+      // Create shadow root
+      const shadow = modalHost.attachShadow({ mode: "open" });
+
+      // Add modal styles and content to shadow DOM
+      shadow.innerHTML = `
+      <style>
+        .modal-overlay {
+          position: fixed;
+          top: 0;
+          left: 0;
+          width: 100%;
+          height: 100%;
+          background: rgba(0, 0, 0, 0.5);
+          display: none;
+          justify-content: center;
+          align-items: center;
+        }
+        .modal {
+          background: white;
+          padding: 20px;
+          border-radius: 5px;
+          box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+          max-width: 400px;
+          width: 90%;
+        }
+        .modal h2 { margin-top: 0; }
+        .modal button {
+          background: #007bff;
+          color: white;
+          border: none;
+          padding: 8px 16px;
+          border-radius: 4px;
+          cursor: pointer;
+        }
+        .modal button:hover { background: #0056b3; }
+      </style>
+      <div class="modal-overlay" id="modal-overlay">
+        <div class="modal">
+          <h2>Modal Title</h2>
+          <p>This modal is encapsulated in Shadow DOM!</p>
+          <button id="close-modal">Close</button>
+        </div>
+      </div>
+    `;
+
+      // Get references to shadow DOM elements
+      const overlay = shadow.getElementById("modal-overlay");
+      const closeBtn = shadow.getElementById("close-modal");
+
+      // Event listeners
+      openBtn.addEventListener("click", () => {
+        overlay.style.display = "flex";
+      });
+
+      closeBtn.addEventListener("click", () => {
+        overlay.style.display = "none";
+      });
+
+      overlay.addEventListener("click", (event) => {
+        if (event.target === overlay) {
+          overlay.style.display = "none";
+        }
+      });
+    </script>
+  </body>
+</html>
+```
