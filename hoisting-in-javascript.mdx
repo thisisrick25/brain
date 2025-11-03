@@ -1,0 +1,156 @@
+---
+title: "Hoisting in JavaScript"
+description: "How hoisting works in JavaScript."
+publishedAt: 2025-11-02
+updatedAt: 2025-11-04
+isPublished: true
+tags:
+  - javascript
+---
+
+## 1. What is hoisting?
+
+Hoisting is a JavaScript behavior where declarations (variables and functions) are conceptually moved to the top of their scope before code execution. That means a declared identifier may exist earlier in the source code than where its declaration appears.
+
+Hoisting does not move assignments, only declarations. Understanding hoisting helps explain many common surprises in JavaScript and improves debugging.
+
+---
+
+## 2. Scope recap
+
+Scope determines where a variable or function is visible. Common scopes:
+
+- Global scope: available everywhere.
+- Function scope: available inside the function.
+- Block scope: (`let` / `const`) available inside the nearest `{ ... }` block.
+
+Knowing scope is essential to reason about hoisting.
+
+---
+
+## 3. Variable hoisting (var vs let/const)
+
+`var` declarations are hoisted and initialized to `undefined`. `let` and `const` are hoisted too but are not initialized, accessing them before their declaration throws a ReferenceError (the Temporal Dead Zone).
+
+```javascript
+// var: hoisted and initialised to undefined
+console.log(a); // undefined
+var a = 10;
+
+// equivalent to:
+var a;
+console.log(a); // undefined
+a = 10;
+
+// let / const: hoisted but uninitialized (TDZ)
+console.log(b); // ReferenceError: Cannot access 'b' before initialization
+let b = 20;
+```
+
+---
+
+## 4. Function hoisting (declarations vs expressions)
+
+Function declarations are hoisted with their body, so you can call them before they appear in the code. Function expressions (including arrow functions assigned to variables) behave like variables.
+
+```javascript
+// Function declaration — hoisted
+greet(); // 'Hello'
+function greet() {
+  console.log("Hello");
+}
+
+// Function expression — not hoisted (behaves like variable)
+sayHi(); // TypeError: sayHi is not a function (or ReferenceError if using let/const)
+var sayHi = function () {
+  console.log("Hi");
+};
+```
+
+---
+
+## 5. Temporal Dead Zone (TDZ)
+
+`let` and `const` declarations are in a temporal dead zone from the start of their scope until their initialization. Accessing them in that window throws a ReferenceError.
+
+```javascript
+{
+  // TDZ for x
+  console.log(x); // ReferenceError
+  let x = 5;
+}
+```
+
+---
+
+## 6. Common pitfalls and gotchas
+
+- Assuming `var` behaves like block-scoped `let`, it doesn't.
+- Calling function expressions before assignment causes errors.
+- Relying on hoisting for program logic makes code harder to read and maintain.
+
+**Example: var and loops**
+
+```javascript
+for (var i = 0; i < 3; i++) {
+  setTimeout(() => console.log(i), 10); // prints 3,3,3
+}
+
+for (let j = 0; j < 3; j++) {
+  setTimeout(() => console.log(j), 10); // prints 0,1,2
+}
+```
+
+---
+
+## 7. Best practices
+
+- Prefer `let` and `const` over `var`.
+- Declare variables at the top of their scope to improve readability (or keep declarations close to use but avoid TDZ surprises).
+- Use function declarations when you want hoisted behavior intentionally; otherwise prefer expressions for clarity.
+- Avoid relying on hoisting for control flow.
+
+---
+
+## 8. TL;DR
+
+- Declarations (var, let, const, functions) are hoisted to the top of their scope.
+- `var` is hoisted and initialized to `undefined`.
+- `let`/`const` are hoisted but uninitialized (TDZ).
+- Function declarations are hoisted with their body; function expressions are not.
+
+---
+
+## 9. Interview questions
+
+Q: What is hoisting? How does it differ for `var`, `let`, and `const`?
+
+A: Hoisting is the process where declarations are conceptually moved to the top of their scope. `var` is hoisted and initialized to `undefined`. `let` and `const` are hoisted too but remain uninitialized until their declaration is evaluated, accessing them before initialization throws a ReferenceError (this window is called the Temporal Dead Zone).
+
+Q: What is the Temporal Dead Zone (TDZ)?
+
+A: The TDZ is the time between entering a scope and the point where a `let`/`const` variable is initialized. Attempting to access the variable during the TDZ throws a ReferenceError.
+
+Q: How do function declarations and function expressions differ with respect to hoisting?
+
+A: Function declarations are hoisted with their body, so you can call them before their appearance in source code. Function expressions (including arrow functions assigned to variables) behave like variables: the variable binding may be hoisted, but the assignment is not, calling before assignment will fail (TypeError or ReferenceError depending on `var`/`let`/`const`).
+
+Q: Why does using `var` in a loop with async callbacks often surprise developers?
+
+A: Because `var` is function-scoped, every iteration shares the same binding. Async callbacks capture that single binding and will observe its final value when they execute. Using `let` creates a fresh block-scoped binding per iteration, so each callback sees the expected iteration value.
+
+---
+
+## 10. Examples
+
+Try these:
+
+- Rewrite code that uses `var` to use `let`/`const` and explain behavior changes.
+- Predict outputs for combined hoisting and closures examples.
+
+```javascript
+console.log(typeof f); // ?
+var f = function () {};
+```
+
+Answer: `typeof f` is 'function' if hoisted as function, but here `f` is a var assigned to a function expression, so before assignment `typeof f` => 'undefined'.
