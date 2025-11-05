@@ -1,0 +1,32 @@
+---
+prNumber: 555
+repo: "brainglobe/brainglobe-atlasapi"
+title: "Remove all references to the transformation to the BrainGlobe orientation"
+url: "https://github.com/brainglobe/brainglobe-atlasapi/pull/555"
+mergedAt: "2025-04-30T12:24:22Z"
+summary: "This PR removes all internal code and references that automatically transformed atlases into a specific 'BrainGlobe orientation', simplifying the codebase and relying on atlases being provided in their intended orientation."
+---
+
+# Contribution Summary
+
+## What was done
+
+- Removed all code and references responsible for automatically transforming atlas data into a designated "BrainGlobe orientation".
+- Eliminated explicit orientation transformation logic throughout the `brainglobe-atlasapi` codebase.
+- Closed related issue #547, which prompted this change.
+
+## Impact
+
+- **Code Simplification:** The API's codebase is simplified by removing complex orientation transformation logic, leading to a cleaner and potentially more maintainable system.
+- **Improved Clarity:** Atlases are now expected to be used as provided, without the API attempting to reorient them, which can prevent unexpected behavior.
+- **Consistency:** Avoids potential inconsistencies or bugs that could arise from automatic transformations.
+- **User/Developer Responsibility:** This change shifts the responsibility of ensuring atlases are in a desired orientation to the user or atlas developer, as the API will no longer perform this step.
+- **No Breaking Change:** Despite the removal of significant functionality, the PR explicitly states it is not a breaking change, suggesting the previous transformation behavior might have been problematic or not widely relied upon externally.
+
+## Technical details
+
+- **Purpose:** Addresses and closes issue #547, which likely pointed out issues with the existing orientation transformation mechanism.
+- **Methodology:** Involved identifying and removing specific code snippets and references related to orientation handling and conversion logic within the `brainglobe-atlasapi`.
+- **Testing:** The changes were tested locally to ensure stability and correctness post-removal.
+- **Documentation:** Although an initial thought was to update documentation to mention new atlases should be in `asr` orientation, this was later deemed unnecessary, indicating the core change is the removal of automatic transformation rather than enforcing a new orientation through documentation.
+- **Formatting:** The code adheres to formatting standards enforced by pre-commit hooks.

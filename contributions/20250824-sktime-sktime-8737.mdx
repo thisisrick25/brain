@@ -1,0 +1,31 @@
+---
+prNumber: 8737
+repo: "sktime/sktime"
+title: "[ENH] add tests for TSC `evaluate` parallelization backends "
+url: "https://github.com/sktime/sktime/pull/8737"
+mergedAt: "2025-08-24T12:46:02Z"
+summary: "This PR enhances the testing suite for `sktime`'s Time Series Classification (TSC) `evaluate` function by adding comprehensive tests for all supported parallelization backends."
+---
+
+# Contribution Summary
+
+## What was done
+
+- The test file `classification/model_evaluation/tests/test_evaluate.py` was modified to expand test coverage for the TSC `evaluate` function's parallelization backends.
+- The `_get_parallel_test_fixtures` utility was imported to dynamically retrieve a list of available parallel backend configurations.
+- This utility was used to create a `BACKENDS` list, populating it with the identified parallel backend configurations.
+- The existing `test_evaluate_parallel_backend` test was parameterized using the `@pytest.mark.parametrize("backend", BACKENDS)` decorator, ensuring that all defined parallel backends are tested.
+
+## Impact
+
+- Significantly improves the robustness and reliability of `sktime`'s Time Series Classification `evaluate` function, especially when utilizing various parallelization backends.
+- Ensures that parallel execution for evaluation functions is thoroughly tested across different configurations, reducing the likelihood of regressions or bugs related to backend-specific issues.
+- Addresses and closes the related issue #8703, which likely pointed to a gap in testing for these parallelization aspects.
+
+## Technical details
+
+- **Modified File:** `sktime/classification/model_evaluation/tests/test_evaluate.py`.
+- **Key Utility:** `_get_parallel_test_fixtures` (imported and utilized to retrieve backend configurations).
+- **Testing Framework:** `pytest` was used, specifically leveraging `pytest.mark.parametrize` for test parameterization.
+- **Technology:** Python.
+- The changes focus on improving the test suite by making it more dynamic and comprehensive for `sktime`'s parallel processing capabilities in time series classification evaluation.
