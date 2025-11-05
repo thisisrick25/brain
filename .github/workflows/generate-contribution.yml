@@ -36,6 +36,7 @@ jobs:
           rm -rf node_modules package.json package-lock.json
           git config --global user.name 'Swapnaneel Patra'
           git config --global user.email 'swapnaneel06@gmail.com'
+          git remote set-url origin https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git
           git add .
           if git diff --staged --quiet; then
             echo "No changes to commit"
