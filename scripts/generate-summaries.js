@@ -1,13 +1,16 @@
-import fs from "fs";
-import path from "path";
-import { GoogleGenAI } from "@google/genai";
+const fs = require("fs");
+const path = require("path");
+const { GoogleGenAI } = require("@google/genai");
 
 const GITHUB_REPO_OWNER = process.env.GITHUB_REPO_OWNER;
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 
 // List of PRs to ignore (add PR IDs here), format: "owner/repo#number"
-const ignoredPRs = ["open-minds/awesome-openminds-team#106", "shrutikapoor08/devjoke#610"]; // e.g., ["owner/repo#123", "other/repo#456"]
+const ignoredPRs = [
+  "open-minds/awesome-openminds-team#106",
+  "shrutikapoor08/devjoke#610",
+]; // e.g., ["owner/repo#123", "other/repo#456"]
 
 if (!GITHUB_TOKEN) {
   throw new Error("GITHUB_TOKEN is required");
@@ -162,8 +165,10 @@ async function main() {
       console.log(`Ignoring PR ${pr.repo}#${pr.id}`);
       continue;
     }
-    const repoSlug = pr.repo.replace('/', '-');
-    const dateStr = pr.merged_at ? pr.merged_at.slice(0, 10).replace(/-/g, '') : '00000000';
+    const repoSlug = pr.repo.replace("/", "-");
+    const dateStr = pr.merged_at
+      ? pr.merged_at.slice(0, 10).replace(/-/g, "")
+      : "00000000";
     const fileName = `${dateStr}-${repoSlug}-${pr.id}.mdx`;
     const filePath = path.join(contributionsDir, fileName);
 
