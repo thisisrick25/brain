@@ -33,6 +33,7 @@ jobs:
 
       - name: Commit and push changes
         run: |
+          rm -rf node_modules
           git config --global user.name 'Swapnaneel Patra'
           git config --global user.email 'swapnaneel06@gmail.com'
           git add .
