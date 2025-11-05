@@ -8,7 +8,7 @@ on:
     - cron: "0 0 * * 0" # Every Sunday at midnight UTC
 
 jobs:
-  generate:
+  generate-contribution-summaries:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -33,7 +33,7 @@ jobs:
 
       - name: Commit and push changes
         run: |
-          rm -rf node_modules
+          rm -rf node_modules package.json package-lock.json
           git config --global user.name 'Swapnaneel Patra'
           git config --global user.email 'swapnaneel06@gmail.com'
           git add .
