@@ -1,0 +1,44 @@
+name: Generate Contribution Summaries
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "0 0 * * 0" # Every Sunday at midnight UTC
+
+jobs:
+  generate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24.11.0"
+
+      - name: Install dependencies
+        run: |
+          npm init -y
+          npm install @google/genai
+
+      - name: Fetch PRs and generate summaries
+        run: node scripts/generate-summaries.js
+        env:
+          GITHUB_REPO_OWNER: ${{ github.repository_owner }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+
+      - name: Commit and push changes
+        run: |
+          git config --global user.name 'Swapnaneel Patra'
+          git config --global user.email 'swapnaneel06@gmail.com'
+          git add .
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update contribution summaries"
+            git push
+          fi
