@@ -1,0 +1,35 @@
+---
+prNumber: 6235
+repo: "google-gemini/gemini-cli"
+title: "fix(core): correctly consolidate multi-part text content"
+url: "https://github.com/google-gemini/gemini-cli/pull/6235"
+mergedAt: "2025-08-22T18:20:30Z"
+summary: "This PR fixes chat history desynchronization after tool-use, consolidates multi-part text content, and refines history by handling 'thought' content."
+---
+
+# Contribution Summary
+
+## What was done
+
+-   Removed an `isFunctionResponse` check to ensure empty model turns are correctly recorded in chat history, maintaining consistent alternating roles after tool-use.
+-   Implemented logic within the `recordHistory` method to consolidate adjacent text-based model responses, making the history more concise.
+-   Introduced an `isThoughtContent` helper to specifically identify model "thought" parts.
+-   Modified streaming responses to immediately yield "thought" content for real-time updates, while simultaneously filtering these thoughts from the permanent chat history record.
+
+## Impact
+
+-   Resolves chat history desynchronization issues, particularly after tool-use, ensuring subsequent `generateContent` calls receive an accurate and consistent history with strictly alternating roles.
+-   Enhances the readability and conciseness of the chat history by merging consecutive text responses from the model.
+-   Improves the relevance of the stored chat history by excluding internal "thought" content, focusing on actionable or conversational turns.
+-   Provides a better user experience for streaming responses by offering immediate feedback on model "thoughts" without cluttering the persistent history.
+-   Closes issue #4053, addressing previous inconsistencies in chat history synchronization.
+
+## Technical details
+
+-   **Key modifications**: The core changes are made within the chat history management logic, specifically in the `recordHistory` method.
+    -   The previous `isFunctionResponse` check was removed to allow the recording of empty model turns, thus maintaining the alternating user/model pattern.
+    -   New logic was added to `recordHistory` to intelligently merge consecutive text parts received from the model into a single history entry.
+    -   A new helper function, `isThoughtContent`, was introduced to identify content parts specifically flagged as model "thoughts."
+    -   The system now distinguishes between yielding "thought" content immediately for streaming user feedback and filtering it out from the long-term stored chat history.
+-   **Technologies used**: Primarily involves changes to the core logic of the Gemini CLI, likely implemented in TypeScript/JavaScript.
+-   **Resolved issues**: Directly addresses and resolves issues related to chat history inconsistency and desynchronization, specifically documented in `closes #4053`.

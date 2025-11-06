@@ -1,0 +1,31 @@
+---
+prNumber: 555
+repo: "brainglobe/brainglobe-atlasapi"
+title: "Remove all references to the transformation to the BrainGlobe orientation"
+url: "https://github.com/brainglobe/brainglobe-atlasapi/pull/555"
+mergedAt: "2025-04-30T12:24:22Z"
+summary: "This PR removes all internal code and references related to transforming atlases to the BrainGlobe specific orientation, closing issue #547."
+---
+
+# Contribution Summary
+
+## What was done
+
+-   All code and references responsible for transforming atlases into a specific "BrainGlobe orientation" were removed.
+-   This change addresses and closes issue #547.
+-   The PR is categorized as "Other" in the description, indicating a refactoring or cleanup task rather than a new feature or bug fix.
+
+## Impact
+
+-   Simplifies the `brainglobe-atlasapi` codebase by eliminating unnecessary transformation logic.
+-   Ensures atlases are handled and consumed in their expected native orientation, potentially standardizing around orientations like `asr` as previously hinted in the PR discussion.
+-   Reduces complexity and potential for errors related to internal coordinate system transformations.
+-   This is not a breaking change for users of the API.
+-   No updates to the public documentation are required as a result of this change.
+
+## Technical details
+
+-   The PR involved identifying and removing specific code segments and references throughout the `brainglobe-atlasapi` that managed the transformation of atlases to the "BrainGlobe orientation."
+-   While specific files are not listed in the PR body, the task indicates changes across modules responsible for atlas loading and processing.
+-   The changes were tested locally.
+-   The implementation is within the existing Python codebase of the `brainglobe-atlasapi`.

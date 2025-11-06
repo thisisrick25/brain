@@ -1,0 +1,33 @@
+---
+prNumber: 329
+repo: "brainglobe/brainglobe.github.io"
+title: "Built API docs from the docstrings using Sphinx+autodocs"
+url: "https://github.com/brainglobe/brainglobe.github.io/pull/329"
+mergedAt: "2025-08-27T09:31:42Z"
+summary: "This PR introduces automated API documentation generation using Sphinx and autodoc, improving the discoverability and clarity of the `brainglobe-atlasapi` module's API."
+---
+
+# Contribution Summary
+
+## What was done
+
+-   Introduced a new script designed to fetch external repositories relevant to the Brainglobe project.
+-   Updated the Sphinx configuration files to improve documentation paths and integrate necessary extensions for API documentation.
+-   Significantly enhanced the API documentation specifically for the `brainglobe-atlasapi` module by generating it directly from docstrings.
+-   Included setup instructions for Python and external package dependencies within the Sphinx build workflow to ensure reliable documentation generation.
+
+## Impact
+
+-   Provides automatically generated and up-to-date API documentation directly from project docstrings, reducing manual effort and potential for discrepancies.
+-   Significantly improves the accessibility, quality, and comprehensiveness of the project's API reference for developers and users.
+-   Streamlines the documentation generation process, making it more robust, easier to maintain, and scalable for future module additions.
+-   Enhances the overall developer and user experience by offering clear, detailed, and programmatically generated API information.
+
+## Technical details
+
+-   **Technologies Used:** Sphinx, the `autodoc` extension, Python for scripting and core documentation generation.
+-   **Key Changes:**
+    -   Introduction of a Python script to automate the fetching of external Brainglobe repositories, ensuring all necessary sources are available for documentation.
+    -   Modifications to Sphinx configuration (`conf.py`) to enable `autodoc`, define module paths, and specify how API documentation is built from docstrings.
+    -   Updates to documentation source files (e.g., `.rst` files) to incorporate and link to the newly generated API documentation for `brainglobe-atlasapi`.
+    -   Integration of Python environment setup and dependency installation steps directly into the documentation build process, likely affecting CI/CD workflows.
