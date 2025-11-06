@@ -1,0 +1,45 @@
+---
+id: 6235
+repo: "google-gemini/gemini-cli"
+title: "fix(core): correctly consolidate multi-part text content"
+url: "https://github.com/google-gemini/gemini-cli/pull/6235"
+mergedAt: "2025-08-22T18:20:30Z"
+relatedIssues: ["https://github.com/google-gemini/gemini-cli/issues/4053"]
+summary: "This PR fixes chat history synchronization after tool-use, consolidates adjacent text-based model responses, and introduces filtering for 'thought' content from the permanent history."
+---
+
+# Contribution Summary
+
+## What was done
+
+This pull request addresses several issues related to chat history management within the `gemini-cli`, primarily focusing on maintaining synchronization, improving history conciseness, and refining content stored.
+
+1.  **Fixed chat history desynchronization after tool-use**: The `isFunctionResponse` check, which previously prevented the history from recording an empty model turn if no valid content was returned after a tool-use message, was removed. This ensures that the history now correctly records an empty model turn, maintaining the strict alternating user/model pattern required for subsequent `generateContent` calls.
+2.  **Consolidated adjacent text-based model responses**: New logic was introduced into the `recordHistory` method. This enhancement identifies and merges contiguous text parts within model responses. For instance, `[model: "Hello", model: " there"]` is now consolidated into a single entry `[model: "Hello there"]`, making the stored history more concise and readable. This consolidation occurs when both the last part of the previous response and the first part of the current response are plain text.
+3.  **Introduced special handling for 'thought' content**: A new `isThoughtContent` helper utility was added. This helper function is used to identify internal "thought" parts from model responses. While these 'thought' parts are still yielded immediately in streaming responses to provide real-time updates to the user, they are explicitly filtered out and not permanently recorded in the `history` array. This ensures that the stored chat history remains clean, containing only actionable or conversational content relevant for future interactions, thereby preventing internal model monologue from cluttering the conversational record.
+
+The primary modifications occurred within the core chat history management logic, specifically affecting how model responses are processed and integrated into the `history` array.
+
+## Impact
+
+These changes significantly improve the reliability and user experience of the `gemini-cli` when interacting with the Gemini API, particularly in multi-turn conversations and scenarios involving tool-use.
+
+*   **Improved `generateContent` call reliability**: By ensuring strict alternation of roles even with empty model responses after tool-use, the system avoids desynchronization issues that could lead to malformed prompts for subsequent `generateContent` calls.
+*   **Cleaner and more readable chat history**: The consolidation of adjacent text parts reduces redundancy, resulting in a more streamlined and easily parsable conversation history for both internal system use and potential display to the user.
+*   **Enhanced user experience with 'thought' content**: Users benefit from real-time feedback when the model is "thinking" during streaming, without these internal thoughts permanently polluting the core conversational history. This distinction ensures the stored `history` accurately reflects the user-model dialogue.
+*   **No breaking changes**: The modifications are internal improvements to history management and do not introduce any breaking changes to the CLI's public API or expected behavior, beyond a more robust and refined history state. The scope of impact is core to the application's ability to manage conversational state effectively.
+
+## Technical details
+
+The core technical modifications are implemented within the methods responsible for updating the chat history (`recordHistory` or similar components) and processing incoming `generateContent` responses.
+
+*   **File Modifications**: The changes are concentrated in the module responsible for managing the `ChatSession`'s history, likely involving methods that append `GenerateContentResponse` parts to the `history` array.
+*   **Conditional Logic Refinement**: The `isFunctionResponse` check was specifically targeted and removed from the conditional logic that determines whether a model turn should be recorded. This simplifies the history recording mechanism, ensuring every model interaction, even an empty one, properly increments the turn count.
+*   **Content Consolidation Algorithm**:
+    *   The `recordHistory` method now includes an algorithm that inspects the type of the last `Part` in the previously recorded `Content` entry and the first `Part` of the current `Content` entry.
+    *   If both are `TextPart` instances, the text content of the current `TextPart` is appended to the text of the last `TextPart` of the previous `Content` entry, and the current `TextPart` is then excluded from being added as a new, separate entry.
+    *   This logic typically iterates through the `parts` array of a `GenerateContentResponse`, modifying it before appending to the `history`.
+*   **`isThoughtContent` Helper**: A new helper function, `isThoughtContent`, was introduced. This function likely inspects the `text` property of a `Part` for specific patterns (e.g., "thought", "thinking", or specific internal metadata markers) that denote a model's internal thought process. This helper is used as a predicate in a filter operation when processing `GenerateContentResponse` parts to decide what gets permanently stored in `history`.
+*   **Architectural Implications**: These changes refine the state management of the conversational history, making it more robust against edge cases (like empty tool-use responses) and more semantically aligned with user-facing dialogue by filtering out internal model processes. The internal representation of `history` becomes more compact and accurate.
+
+**Related issues**: [#4053](https://github.com/google-gemini/gemini-cli/issues/4053)

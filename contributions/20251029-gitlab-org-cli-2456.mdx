@@ -1,0 +1,40 @@
+---
+id: 2456
+repo: "gitlab-org/cli"
+title: "feat(gpg-key): add gpg-key management commands"
+url: "https://gitlab.com/gitlab-org/cli/-/merge_requests/2456"
+mergedAt: "2025-10-29T09:18:02Z"
+relatedIssues: ["https://gitlab.com/gitlab-org/cli/-/issues/1052"]
+summary: "This merge request introduces a comprehensive set of commands for managing GPG keys on a GitLab account directly through the `glab` command-line interface."
+---
+
+# Contribution Summary
+
+## What was done
+
+- Implemented a new `gpg-key` subcommand for the `glab` CLI, allowing users to manage their GPG keys directly from the terminal.
+- Added four specific commands under the `gpg-key` subcommand:
+    - `glab gpg-key add [key-file]`: Facilitates the addition of a new GPG key to the authenticated user's GitLab account by reading the key content from a specified file.
+    - `glab gpg-key list [--show-id]`: Retrieves and displays a list of all GPG keys currently associated with the user, with an optional flag to include the full key ID.
+    - `glab gpg-key get <key-id>`: Fetches and outputs the details of a specific GPG key using its unique identifier.
+    - `glab gpg-key delete <key-id>`: Enables the removal of a GPG key from the user's GitLab account by specifying its ID.
+- This suite of commands provides full CRUD (Create, Read, Delete) functionality for GPG keys through the CLI, directly addressing and resolving issue #1052.
+
+## Impact
+
+- Significantly enhances the utility of the `glab` CLI by providing native GPG key management capabilities, eliminating the need for users to navigate to the GitLab web interface for these operations.
+- Improves the workflow efficiency for developers and users who prefer command-line interactions for managing their GitLab resources and security credentials.
+- Introduces a new set of functionalities for all `glab` users, offering greater convenience and control over their GPG key setup on GitLab.
+- This change is purely additive and introduces no breaking changes to existing `glab` functionality.
+- It directly resolves a user request for GPG key management, making the CLI more comprehensive for security-conscious users.
+
+## Technical details
+
+- The new commands are structured under a dedicated `gpg-key` subcommand, likely residing within `cmd/gpg-key/` directory and its sub-files for `add.go`, `list.go`, `get.go`, and `delete.go`.
+- Each command is responsible for parsing specific arguments and flags (e.g., `key-file` path, `key-id`, boolean flags like `--show-id`).
+- The implementation involves making authenticated HTTP requests to the respective GitLab API endpoints for GPG key management (e.g., `POST /user/gpg_keys`, `GET /user/gpg_keys`, `GET /user/gpg_keys/:id`, `DELETE /user/gpg_keys/:id`).
+- The Go language and `glab`'s existing internal API client (`pkg/gitlab/api` or similar) are utilized to interact with the GitLab backend.
+- Data structures are defined or leveraged to represent GPG key objects as returned by the GitLab API, facilitating data parsing and presentation.
+- Input handling for `gpg-key add` involves reading the GPG key's public part from a local file, ensuring proper encoding (e.g., ASCII armored PGP public key block) before sending it to the API.
+
+**Related issues**: [#1052](https://gitlab.com/gitlab-org/cli/-/issues/1052)

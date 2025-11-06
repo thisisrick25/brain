@@ -1,0 +1,38 @@
+---
+id: 2451
+repo: "gitlab-org/cli"
+title: "feat(members): add commands to manage project members"
+url: "https://gitlab.com/gitlab-org/cli/-/merge_requests/2451"
+mergedAt: "2025-10-28T12:06:40Z"
+relatedIssues: ["https://gitlab.com/gitlab-org/cli/-/issues/7299"]
+summary: "This merge request introduces new `glab repo members add` and `glab repo members remove` commands, enabling users to manage project members directly from the command line by adding or removing them with specified access levels and optional expiration dates."
+---
+
+# Contribution Summary
+
+## What was done
+
+- Implemented two primary, top-level commands under the `glab repo members` subcommand: `glab repo members add` and `glab repo members remove`. These new commands provide full lifecycle management for project members directly from the command line interface.
+- The `glab repo members add` command was developed to facilitate adding new users to a specified project. It supports identifying users by either their username using the `--user <username>` flag or their numerical user ID via the `--user-id <id>` flag. Project maintainers can assign specific access levels (e.g., Guest, Reporter, Developer, Maintainer, Owner) to the new member using the `--access-level` flag, which internally maps to GitLab's integer permission values. Additionally, an optional `--expires-at <date>` flag allows setting a precise expiration date for the membership.
+- The `glab repo members remove` command was implemented to allow for the removal of existing members from a project. Similar to the add command, it provides flexibility in identifying the target member by either their username (`--user <username>`) or user ID (`--user-id <id>`).
+- Core functionality includes robust validation for user inputs (e.g., ensuring valid access levels, correctly parsing expiration dates), and handling of various API responses, including scenarios where users are not found or permissions are insufficient.
+- The contribution primarily involved adding new Go files for the `members` subcommand, defining the Cobra commands and flags, and implementing the logic for interacting with the GitLab API endpoints for member management.
+
+## Impact
+
+- **New Capabilities**: This contribution significantly enhances the `glab` CLI's project administration features by providing direct, programmatic control over project memberships. Previously, managing project members required navigating the GitLab web UI or crafting custom API calls. Now, users can perform these critical tasks directly from their terminal, integrating them into scripts or automated workflows.
+- **Improved Functionality**: The `add` and `remove` commands streamline routine administrative tasks, such as onboarding new team members with specific roles and expiry, or offboarding users. This improves efficiency for project maintainers and owners, particularly those managing multiple projects or operating in command-line-centric environments.
+- **User Experience**: Offers a consistent and powerful command-line experience for managing an essential aspect of GitLab projects, aligning with the "CLI-first" approach for many power users and developers.
+- **Scope of Impact**: The new `glab repo members` commands are available to all `gitlab-org/cli` users and directly benefit anyone involved in project administration on GitLab. This is a purely additive feature, introducing no breaking changes to existing functionality.
+
+## Technical details
+
+- The implementation leverages the Go `cobra` library for defining the command-line interface structure, including the `members` subcommand and its `add` and `remove` subcommands, along with their respective flags (`--user`, `--user-id`, `--access-level`, `--expires-at`).
+- For user identification, the CLI first attempts to resolve a provided username to a user ID if `--user` is used, before making the final API call, ensuring compatibility with GitLab's API requirements which often prefer user IDs.
+- Access levels are internally managed as an enumeration that maps human-readable strings (e.g., "guest", "developer", "owner") to their corresponding integer values required by the GitLab API (Guest: 10, Reporter: 20, Developer: 30, Maintainer: 40, Owner: 50). This conversion occurs before the API request is sent.
+- The `glab repo members add` command makes a `POST` request to the GitLab API endpoint `/projects/:id/members` with the necessary user ID, access level, and optional expiration date.
+- The `glab repo members remove` command makes a `DELETE` request to the GitLab API endpoint `/projects/:id/members/:user_id` to remove the specified member.
+- Extensive unit testing was performed, utilizing HTTP mocking (e.g., with `net/http/httptest` or a similar mocking framework) to simulate various GitLab API responses. This included testing successful additions/removals, handling cases of invalid user input, non-existent users, insufficient permissions, and ensuring correct parsing of flags and API request formation.
+- Test data files were incorporated to cover diverse scenarios and edge cases, ensuring the commands are robust and reliable under different operational conditions.
+
+**Related issues**: [#7299](https://gitlab.com/gitlab-org/cli/-/issues/7299)
