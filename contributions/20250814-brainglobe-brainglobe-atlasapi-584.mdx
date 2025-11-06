@@ -1,0 +1,32 @@
+---
+prNumber: 584
+repo: "brainglobe/brainglobe-atlasapi"
+title: "Update docstring format"
+url: "https://github.com/brainglobe/brainglobe-atlasapi/pull/584"
+mergedAt: "2025-08-14T10:06:48Z"
+summary: "This PR updates docstrings across the codebase to enhance consistency, improve readability, and ensure proper Sphinx documentation generation, addressing various Pydocstyle linting issues."
+---
+
+# Contribution Summary
+
+## What was done
+
+-   Updated existing docstrings throughout the codebase for consistency and adherence to Sphinx documentation standards.
+-   Improved docstring formatting, including the addition of missing punctuation.
+-   Introduced module-level docstrings where necessary to provide context for each module's purpose.
+-   Addressed and fixed several Pydocstyle error codes, including D100 (Missing docstring in public module), D102 (Missing docstring in public method), D105 (Missing docstring in magic method), D200 (One-line docstring should fit on one line), D400 (First line should end with a period), D401 (First line of docstring should be in imperative mood), D404 (First word of the docstring should not be "This"), D407 (Missing dashed underline after section), and D406 (Section name should end with a newline).
+-   Refined the content and 'literature' within the docstrings for improved clarity and accuracy.
+
+## Impact
+
+-   Significantly improves the consistency and overall quality of the project's internal documentation.
+-   Enhances code readability and maintainability for developers.
+-   Ensures accurate and comprehensive generation of Sphinx documentation for the API.
+-   Resolves multiple Pydocstyle linting errors, contributing to a cleaner, more standardized, and higher-quality codebase.
+-   Closes related issues #581 and #582, addressing identified documentation shortcomings.
+
+## Technical details
+
+-   **Modified Files:** Numerous Python source files across the `brainglobe-atlasapi` repository had their docstrings reviewed and updated.
+-   **Technologies Used:** Pydocstyle (for static analysis and linting of docstrings), Sphinx (for documentation generation).
+-   **Specific Fixes:** The changes specifically targeted various Pydocstyle violations concerning docstring presence, formatting, sentence structure, and style, ensuring alignment with common Python documentation best practices.

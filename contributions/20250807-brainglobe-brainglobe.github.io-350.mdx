@@ -1,0 +1,29 @@
+---
+prNumber: 350
+repo: "brainglobe/brainglobe.github.io"
+title: "docs(brainglobe-space): standardize import alias in examples"
+url: "https://github.com/brainglobe/brainglobe.github.io/pull/350"
+mergedAt: "2025-08-07T10:25:28Z"
+summary: "This PR standardizes the import alias for `brainglobe_space` from `bg` to `bgs` across all Python code examples in the documentation."
+---
+
+# Contribution Summary
+
+## What was done
+
+- The import alias for the `brainglobe_space` library was updated from `bg` to `bgs` in all Python code examples throughout the documentation.
+- The change standardizes the alias used for `brainglobe_space` to `bgs` for consistency.
+- This PR addresses and closes issue #344.
+
+## Impact
+
+- Improves consistency and readability of code examples for users interacting with `brainglobe_space` through the documentation.
+- Reduces potential confusion that could arise from using different aliases (`bg` vs. `bgs`) for the same library within the documentation.
+- Enhances the overall user experience by providing a unified and predictable convention for library imports.
+
+## Technical details
+
+- Modified numerous Python code examples (likely within `.mdx` or `.py` files) where `brainglobe_space` was imported.
+- The core change involved systematically replacing `import brainglobe_space as bg` with `import brainglobe_space as bgs` and updating all subsequent uses of `bg` to `bgs`.
+- The modifications are confined to documentation content and do not involve changes to the `brainglobe_space` library itself or its core functionality.
+- No new technologies or dependencies were introduced.
