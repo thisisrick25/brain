@@ -4,28 +4,28 @@ repo: "sktime/sktime"
 title: "[ENH] add tests for TSC `evaluate` parallelization backends "
 url: "https://github.com/sktime/sktime/pull/8737"
 mergedAt: "2025-08-24T12:46:02Z"
-summary: "This PR enhances the testing suite for `sktime`'s Time Series Classification (TSC) `evaluate` function by adding comprehensive tests for all supported parallelization backends."
+summary: "This PR enhances test coverage for the Time Series Classification `evaluate` function by parameterizing its parallelization backend tests to include all available configurations."
 ---
 
 # Contribution Summary
 
 ## What was done
 
-- The test file `classification/model_evaluation/tests/test_evaluate.py` was modified to expand test coverage for the TSC `evaluate` function's parallelization backends.
-- The `_get_parallel_test_fixtures` utility was imported to dynamically retrieve a list of available parallel backend configurations.
-- This utility was used to create a `BACKENDS` list, populating it with the identified parallel backend configurations.
-- The existing `test_evaluate_parallel_backend` test was parameterized using the `@pytest.mark.parametrize("backend", BACKENDS)` decorator, ensuring that all defined parallel backends are tested.
+-   The test file `sktime/classification/model_evaluation/tests/test_evaluate.py` was modified.
+-   The `_get_parallel_test_fixtures` utility was imported to retrieve a list of available parallel backend configurations.
+-   This utility was used to create a `BACKENDS` list containing these configurations.
+-   The existing `test_evaluate_parallel_backend` test was parameterized using the `@pytest.mark.parametrize("backend", BACKENDS)` decorator, ensuring it runs for all defined parallelization backends.
 
 ## Impact
 
-- Significantly improves the robustness and reliability of `sktime`'s Time Series Classification `evaluate` function, especially when utilizing various parallelization backends.
-- Ensures that parallel execution for evaluation functions is thoroughly tested across different configurations, reducing the likelihood of regressions or bugs related to backend-specific issues.
-- Addresses and closes the related issue #8703, which likely pointed to a gap in testing for these parallelization aspects.
+-   Significantly improves the robustness and reliability of the Time Series Classification (TSC) `evaluate` function by ensuring its parallelization capabilities are thoroughly tested across all supported backends.
+-   Helps prevent regressions related to parallel execution issues in the future.
+-   Addresses a previously identified gap in testing for different parallelization backends, specifically fixing issue #8703.
+-   Ensures consistent and correct behavior of the `evaluate` function irrespective of the parallel backend chosen.
 
 ## Technical details
 
-- **Modified File:** `sktime/classification/model_evaluation/tests/test_evaluate.py`.
-- **Key Utility:** `_get_parallel_test_fixtures` (imported and utilized to retrieve backend configurations).
-- **Testing Framework:** `pytest` was used, specifically leveraging `pytest.mark.parametrize` for test parameterization.
-- **Technology:** Python.
-- The changes focus on improving the test suite by making it more dynamic and comprehensive for `sktime`'s parallel processing capabilities in time series classification evaluation.
+-   **Modified file**: `sktime/classification/model_evaluation/tests/test_evaluate.py`
+-   **Key changes**: Introduction of `pytest.mark.parametrize` to generalize parallel backend testing.
+-   **Utility leveraged**: `_get_parallel_test_fixtures` from the sktime testing utilities to dynamically obtain parallel backend configurations.
+-   **Technologies used**: `pytest` for test parameterization and execution, leveraging `sktime`'s internal parallelization backend infrastructure.

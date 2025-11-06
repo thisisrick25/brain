@@ -11,17 +11,19 @@ summary: "This PR standardizes the import alias for `brainglobe_space` from `bg`
 
 ## What was done
 
-- The import alias for the `brainglobe_space` library was updated from `bg` to `bgs` in all relevant Python code examples within the `brainglobe.github.io` documentation.
-- The change aimed to standardize the alias used for `brainglobe_space` throughout the entire documentation, ensuring consistency for users.
+- The import alias for the `brainglobe_space` library was updated from `bg` to `bgs` in all Python code examples throughout the documentation.
+- The change standardizes the alias used for `brainglobe_space` to `bgs` for consistency.
+- This PR addresses and closes issue #344.
 
 ## Impact
 
-- Improves the consistency and readability of code examples across the `brainglobe.github.io` documentation, making it easier for users to follow and understand.
-- Reduces potential confusion that could arise from different aliases being used for the same library in various examples.
-- Establishes a standard alias (`bgs`) for `brainglobe_space`, promoting best practices and unified usage.
+- Improves consistency and readability of code examples for users interacting with `brainglobe_space` through the documentation.
+- Reduces potential confusion that could arise from using different aliases (`bg` vs. `bgs`) for the same library within the documentation.
+- Enhances the overall user experience by providing a unified and predictable convention for library imports.
 
 ## Technical details
 
-- The changes primarily involved modifying Python code snippets embedded within documentation files (likely Markdown files) to reflect the new `import brainglobe_space as bgs` convention.
-- The PR directly addresses and closes issue #344, which likely called for this standardization.
-- The modifications were applied to examples where `brainglobe_space` was previously imported as `bg`.
+- Modified numerous Python code examples (likely within `.mdx` or `.py` files) where `brainglobe_space` was imported.
+- The core change involved systematically replacing `import brainglobe_space as bg` with `import brainglobe_space as bgs` and updating all subsequent uses of `bg` to `bgs`.
+- The modifications are confined to documentation content and do not involve changes to the `brainglobe_space` library itself or its core functionality.
+- No new technologies or dependencies were introduced.
