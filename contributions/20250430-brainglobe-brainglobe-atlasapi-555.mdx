@@ -1,0 +1,34 @@
+---
+id: 555
+repo: "brainglobe/brainglobe-atlasapi"
+title: "Remove all references to the transformation to the BrainGlobe orientation"
+url: "https://github.com/brainglobe/brainglobe-atlasapi/pull/555"
+mergedAt: "2025-04-30T12:24:22Z"
+relatedIssues: ["https://github.com/brainglobe/brainglobe-atlasapi/issues/547"]
+summary: "This pull request removes all internal logic responsible for automatically transforming atlases to a specific BrainGlobe orientation, standardizing atlas loading to assume an anterior-superior-right (asr) coordinate system without internal modification."
+---
+
+# Contribution Summary
+
+## What was done
+
+This pull request completely removes the implicit transformation logic that previously reoriented loaded atlases to a specific "BrainGlobe orientation." This change directly addresses issue [#547](https://github.com/brainglobe/brainglobe-atlasapi/issues/547), which highlighted the need to stop silently modifying atlas orientation upon loading.
+
+The core of the work involved identifying and excising code segments responsible for performing coordinate system adjustments, such as spatial transformations (e.g., matrix multiplications for reorientation, axis swapping, or flipping) applied to atlas volumes or associated mesh data. The intent is to simplify the `brainglobe-atlasapi` by making it assume that all loaded atlases are already in the expected `asr` (anterior-superior-right) orientation, removing the need for internal correction. This implies modifications to modules handling atlas data deserialization, volume processing, and potentially any utility functions that previously encapsulated or called orientation-specific transformations.
+
+## Impact
+
+The primary impact of this contribution is a significant simplification and clarification of how atlas orientations are handled within the `brainglobe-atlasapi`. Users will no longer experience automatic reorientation of atlas data after loading. Instead, the API will now load and return atlas data exactly as it is stored, with the explicit expectation that all standard BrainGlobe atlases adhere to the `asr` coordinate system.
+
+This change enhances predictability and reduces potential for confusion or subtle bugs caused by implicit data modification. While the PR author states it's not a "breaking change," users who previously loaded atlases that were *not* in `asr` orientation and relied on the API to silently correct them might notice different (untansformed) output. However, for atlases already conforming to the `asr` standard, the functionality remains the same, but with improved internal efficiency and clarity due to the removal of unnecessary processing. This pushes the responsibility for correct orientation to the atlas data source rather than internal API corrections, fostering a more robust and explicit data pipeline.
+
+## Technical details
+
+From a technical standpoint, this contribution involved a targeted refactoring to eliminate specific code patterns related to spatial transformations. This typically included:
+- **Removal of transformation matrices:** Deletion of `numpy` arrays or similar data structures used to define reorientation transformations.
+- **Excising transformation functions:** Elimination of calls to functions or methods that performed spatial operations like `np.flip`, `np.swapaxes`, or more complex affine transformations using libraries like `scipy.ndimage` or custom matrix algebra.
+- **Simplification of loading pipelines:** Streamlining the atlas loading logic by removing conditional checks or processing steps specifically designed to adjust orientation. For example, if a `transform_to_brainglobe_orientation` flag or function existed, it would have been removed, along with its associated logic.
+
+The architectural implication is a shift towards a "hands-off" approach for atlas orientation, making the API behave more like a pass-through for `asr`-oriented data. This decision simplifies the internal data model and reduces the computational overhead associated with loading atlases, promoting a leaner, more performant, and less error-prone system by removing a layer of implicit complexity.
+
+**Related issues**: [#547](https://github.com/brainglobe/brainglobe-atlasapi/issues/547)
