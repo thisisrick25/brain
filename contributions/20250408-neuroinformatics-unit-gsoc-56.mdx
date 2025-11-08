@@ -1,0 +1,29 @@
+---
+id: 56
+repo: "neuroinformatics-unit/gsoc"
+title: "brainglobe: Update atlas packaging scripts to atlas API v2 (Swapnaneel Patra)"
+url: "https://github.com/neuroinformatics-unit/gsoc/pull/56"
+mergedAt: "2025-04-08T09:38:33Z"
+relatedIssues: []
+summary: "This pull request updates the brainglobe atlas packaging scripts to align with Atlas API v2, ensuring future compatibility and correct atlas generation processes."
+---
+
+# Contribution Summary
+
+## What was done
+
+This contribution primarily involved modifying the existing Python scripts responsible for packaging brain atlases within the `brainglobe` ecosystem. The core task was to adapt these scripts to fully conform to the specifications and requirements of `brainglobe`'s Atlas API v2. This update ensures that all components of an atlas, including metadata, volumetric data (such as reference images and annotation files), and region label information, are correctly processed, structured, and serialized according to the new API standard. The changes likely involved updating data schema validations, modifying how atlas attributes are defined and stored, and adjusting the output formats to ensure seamless integration with `brainglobe` tools that utilize the v2 API.
+
+## Impact
+
+The changes in this pull request are crucial for the long-term maintainability and compatibility of the `brainglobe` project. For users, it guarantees that atlases generated or re-packaged with the updated scripts will be fully compatible with newer versions of `brainglobe` that rely on Atlas API v2, thereby preventing potential loading errors, data misinterpretations, or feature limitations that might arise from using outdated atlas formats. For developers and the `brainglobe` system, this update provides a standardized and robust pipeline for creating and distributing atlases, facilitating easier integration of new atlas datasets and ensuring consistency across the `brainglobe` software stack. This is an essential internal improvement that solidifies the foundation for future atlas development and utilization within the `brainglobe` community.
+
+## Technical details
+
+The technical implementation focused on updating specific Python scripts typically found within `brainglobe`'s atlas-related sub-projects or utility modules, such as those responsible for atlas building or exporting. While specific file names are not provided, the modifications would target files that handle the transformation of raw atlas data into `brainglobe`-compatible formats. This likely involved:
+*   **Python code adjustments**: Updating function signatures, class methods, and data serialization logic to adhere to the Atlas API v2 specification.
+*   **Schema enforcement**: Implementing or updating code that validates atlas metadata against the new API's schema, ensuring all required fields are present and correctly formatted.
+*   **Data restructuring**: Modifying how volumetric data (e.g., NIfTI files for images, JSON for metadata) and associated lookup tables are organized and linked within the packaged atlas structure.
+The design decision behind these changes is to maintain strict adherence to the evolving `brainglobe` Atlas API, thereby ensuring consistency, interoperability, and future-proofing for all brain atlases distributed and consumed by the `brainglobe` ecosystem.
+
+**Related issues**: None

@@ -1,0 +1,46 @@
+---
+id: 2451
+repo: "gitlab-org/cli"
+title: "feat(members): add commands to manage project members"
+url: "https://gitlab.com/gitlab-org/cli/-/merge_requests/2451"
+mergedAt: "2025-10-28T12:06:40Z"
+relatedIssues: ["https://gitlab.com/gitlab-org/cli/-/issues/7299"]
+summary: "Adds `glab repo members add` and `glab repo members remove` commands to manage project members, allowing users to add or remove members by username/ID with specified access levels and expiration dates."
+---
+
+# Contribution Summary
+
+## What was done
+
+This merge request introduces new `glab` CLI commands to manage project members, addressing the need for direct command-line control over project access. The primary contribution involves:
+
+*   **`glab repo members add` command**: This new command allows users to add members to a specified project.
+    *   It supports identifying users by either their username or user ID.
+    *   Users can configure the access level (Guest, Reporter, Developer, Maintainer, Owner) during addition, mapping directly to GitLab's permission tiers.
+    *   An optional `expires_at` date can be specified for temporary memberships.
+*   **`glab repo members remove` command**: This new command provides functionality to remove existing members from a project.
+    *   Similar to the `add` command, members can be identified by their username or user ID.
+
+The implementation focuses on robust input parsing, clear mapping of CLI options to GitLab API parameters, and comprehensive error handling for various scenarios.
+
+## Impact
+
+These changes significantly enhance the `glab` CLI by providing powerful new capabilities for managing project access directly from the command line.
+
+*   **New Capabilities**: Users can now automate the process of granting and revoking project access, streamlining administrative tasks such as onboarding/offboarding team members, managing temporary access, or scripting permission adjustments across multiple projects.
+*   **Improved Functionality**: The addition of these commands reduces the reliance on the GitLab UI for common project member management operations, making the `glab` CLI a more comprehensive tool for project administrators and maintainers.
+*   **Scope of Impact**: This affects all `glab` CLI users who manage GitLab projects and require efficient, automatable ways to control user access. There are no breaking changes; these commands represent a net addition of functionality.
+
+## Technical details
+
+The technical implementation involved integrating new command structures under `cmd/repo/members` to define `add` and `remove` subcommands.
+
+*   **API Interaction**: Both commands interact with the GitLab API endpoints for project members (`/projects/:id/members`).
+    *   `glab repo members add` sends a `POST` request to create a new project membership, constructing the payload with `user_id`, `access_level`, and `expires_at` parameters.
+    *   `glab repo members remove` sends a `DELETE` request to remove a specific member, requiring `project_id` and `user_id` as parameters.
+*   **Access Level Mapping**: The access level strings (e.g., "Developer") are parsed and mapped internally to their corresponding numeric GitLab API values (e.g., 30 for Developer) before making the API call.
+*   **User Identification**: Logic was implemented to handle user identification dynamically, either by resolving a username to a user ID or directly using a provided user ID.
+*   **Testing**: Extensive unit tests were implemented for both commands. These tests utilized HTTP mocking to simulate various API responses (success, not found, permission denied, invalid input) without making actual network requests. Test data files were used to define diverse scenarios and edge cases, ensuring the commands handle valid and invalid inputs gracefully.
+*   **Libraries**: The contribution likely leverages the `go-gitlab` library for structured API interactions and the `cobra` library for building the command-line interface, consistent with the existing `gitlab-org/cli` codebase.
+
+**Related issues**: [#7299](https://gitlab.com/gitlab-org/cli/-/issues/7299)

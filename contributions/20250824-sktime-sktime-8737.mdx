@@ -1,0 +1,57 @@
+```mdx
+---
+id: 8737
+repo: "sktime/sktime"
+title: "[ENH] add tests for TSC `evaluate` parallelization backends "
+url: "https://github.com/sktime/sktime/pull/8737"
+mergedAt: "2025-08-24T12:46:02Z"
+relatedIssues: ["https://github.com/sktime/sktime/issues/8703"]
+summary: "This pull request enhances the test suite for `sktime`'s Time Series Classification (TSC) `evaluate` function by adding comprehensive testing for all supported parallelization backends."
+---
+
+# Contribution Summary
+
+## What was done
+
+This contribution specifically addresses the testing of parallel execution within `sktime`'s Time Series Classification (TSC) `evaluate` function. Previously, the parallelization of this function might not have been thoroughly tested across all available backend configurations. The primary goal was to ensure the robustness and correctness of the `evaluate` function when leveraging different parallel processing strategies.
+
+The following specific changes were implemented:
+
+-   **Import of Parallel Test Fixtures**: The internal utility `_get_parallel_test_fixtures` was imported into the test file. This utility is responsible for dynamically providing a list of configured parallel backend settings that `sktime` supports for testing.
+-   **Dynamic Backend List Creation**: The imported utility was used to generate a `BACKENDS` list. This list contains various tuples, each representing a distinct parallelization backend configuration (e.g., `'loky'`, `'multiprocessing'`, `'threading'`) along with their respective parameters.
+-   **Test Parameterization**: The existing test function `test_evaluate_parallel_backend` within `sktime/classification/model_evaluation/tests/test_evaluate.py` was enhanced using the `pytest.mark.parametrize` decorator. This decorator was applied to iterate over each `backend` configuration in the `BACKENDS` list, effectively running the same test logic for every specified parallelization backend. This ensures that `evaluate`'s parallel execution is validated for all defined strategies.
+
+The main file modified was `sktime/classification/model_evaluation/tests/test_evaluate.py`.
+
+## Impact
+
+This change significantly improves the internal quality assurance and stability of the `sktime` library, particularly for the Time Series Classification `evaluate` function.
+
+-   **Improved Robustness**: By testing all parallelization backends, this contribution ensures that the `evaluate` function behaves correctly and consistently, regardless of the user's chosen parallel processing strategy. This reduces the likelihood of regressions or unexpected behavior when `evaluate` is used in a parallel context.
+-   **Enhanced Reliability for Users**: Although not adding new user-facing features, the enhanced test coverage indirectly benefits all users who utilize the `evaluate` function with parallel processing. They can have greater confidence in the function's reliability across different system configurations and `sktime`'s supported parallel backends.
+-   **Developer Confidence**: Developers maintaining or extending the `evaluate` function will have a more robust safety net, as future changes are more likely to be caught by the comprehensive test suite if they introduce issues with parallelization.
+-   **Scope**: The impact is primarily an internal improvement to the test suite and quality of the `sktime` library, specifically targeting the `evaluate` functionality within the Time Series Classification module. It directly affects the testing framework and indirectly enhances the stability for all users of the `evaluate` function.
+
+## Technical details
+
+The technical implementation revolves around leveraging `pytest`'s powerful parameterization capabilities and `sktime`'s internal testing utilities.
+
+-   **Modified File**: `sktime/classification/model_evaluation/tests/test_evaluate.py`
+-   **Key Implementation**: The core of the change is the introduction of:
+    ```python
+    from sktime.tests.test_all_estimators import _get_parallel_test_fixtures
+    # ...
+    BACKENDS = _get_parallel_test_fixtures()
+    # ...
+    @pytest.mark.parametrize("backend", BACKENDS)
+    def test_evaluate_parallel_backend(backend):
+        # ... test logic using 'backend' parameter ...
+    ```
+-   **Technologies Used**:
+    -   `pytest`: The primary testing framework, specifically `pytest.mark.parametrize` for data-driven testing.
+    -   `sktime`'s internal testing utilities: `_get_parallel_test_fixtures` is a crucial component that abstracts away the details of configuring different parallel environments (e.g., `backend_args`, `n_jobs`).
+-   **Code Patterns**: The use of dynamic fixture generation (`_get_parallel_test_fixtures`) combined with `pytest.mark.parametrize` is a standard and effective pattern for ensuring extensive test coverage across multiple configurations without duplicating test code.
+-   **Architectural Changes**: There are no architectural changes to the `evaluate` function itself or the core `sktime` library. This contribution is purely an enhancement to the test suite, focusing on increasing the coverage and robustness of existing functionality.
+
+**Related issues**: [#8703](https://github.com/sktime/sktime/issues/8703)
+```

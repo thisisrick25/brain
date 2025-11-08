@@ -1,0 +1,25 @@
+---
+id: 350
+repo: "brainglobe/brainglobe.github.io"
+title: "docs(brainglobe-space): standardize import alias in examples"
+url: "https://github.com/brainglobe/brainglobe.github.io/pull/350"
+mergedAt: "2025-08-07T10:25:28Z"
+relatedIssues: ["https://github.com/brainglobe/brainglobe.github.io/issues/344"]
+summary: "Standardizes the import alias for `brainglobe_space` from `bg` to `bgs` across all Python code examples within the documentation."
+---
+
+# Contribution Summary
+
+## What was done
+
+This pull request addresses issue #344 by standardizing the import alias for the `brainglobe_space` library across all Python code examples in the `brainglobe.github.io` documentation. Specifically, all instances of `import brainglobe_space as bg` were systematically updated to `import brainglobe_space as bgs`. This modification was applied to every code snippet within the documentation that referenced `brainglobe_space`, ensuring a consistent naming convention for the library's alias. The primary goal was to eliminate ambiguity and potential confusion arising from mixed alias usage in examples, promoting a single, canonical `bgs` alias.
+
+## Impact
+
+The impact of these changes is primarily on the user experience and clarity of the `brainglobe_space` documentation. Users engaging with the code examples will now consistently see `bgs` as the alias for `brainglobe_space`, which directly improves readability and reduces the cognitive load associated with learning and using the library. This standardization prevents scenarios where users might encounter `bg` in one example and `bgs` in another, leading to potential syntax errors or uncertainty. There are no breaking changes, new capabilities, or performance implications; instead, the contribution focuses on enhancing the consistency and professionalism of the project's educational materials, making it easier for new and existing users to follow and replicate examples.
+
+## Technical details
+
+The core technical change involved a documentation-wide find-and-replace operation on Python code examples. This targeted all code blocks (e.g., within Markdown `.md` or `.mdx` files) that contained the specific import statement. While no complex algorithms or architectural changes were introduced, the task required careful modification of potentially numerous documentation files to ensure every instance of the old alias was updated. The changes specifically apply to Python code patterns involving module imports. The decision to standardize on `bgs` for `brainglobe_space` aligns with common Python community practices for alias naming, where a short, descriptive form of the package name is preferred (e.g., `numpy as np`, `pandas as pd`). This promotes better code hygiene and maintainability within the documentation itself.
+
+**Related issues**: [#344](https://github.com/brainglobe/brainglobe.github.io/issues/344)
