@@ -211,17 +211,28 @@ summary: "A brief one-sentence summary of the ${
 ---
 
 ## What was done
-- Concrete, technical changes (files, components, features).
-- Implementation approach (patterns/algorithms if relevant).
+- Concrete, technical changes (files, components, features added/modified/deleted).
+- Implementation approach (patterns, algorithms, or methodologies used).
+- Specific files or directories affected.
+- New features, bug fixes, or refactoring details.
+- Code changes summary (additions, deletions, modifications).
 
 ## Impact
-- Effects on users, performance, reliability, DX.
-- Note breaking changes or migrations (if any).
+- Effects on users, performance, reliability, and developer experience.
+- Breaking changes, migrations, or backward compatibility notes.
+- User-facing improvements or regressions.
+- Performance gains/losses or resource usage changes.
+- Security implications or improvements.
+- Developer workflow or tooling changes.
 
 ## Technical details
-- Notable files/paths touched; technologies used.
-- Design / architectural decisions.
-- Testing or validation notes if inferable.
+- Notable files/paths touched and their purposes.
+- Technologies, libraries, or frameworks used/introduced.
+- Design and architectural decisions made.
+- Database schema changes or data migrations.
+- Testing or validation approaches (unit tests, integration tests, etc.).
+- Dependencies added, updated, or removed.
+- Configuration or environment changes.
 
 ## Related issues
 ${
