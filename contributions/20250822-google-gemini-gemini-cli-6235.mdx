@@ -1,0 +1,36 @@
+---
+id: 6235
+repo: "google-gemini/gemini-cli"
+title: "fix(core): correctly consolidate multi-part text content"
+url: "https://github.com/google-gemini/gemini-cli/pull/6235"
+mergedAt: "2025-08-22T18:20:30Z"
+relatedIssues: ["https://github.com/google-gemini/gemini-cli/issues/4053"]
+summary: "This pull request refactors the content consolidation logic in GeminiChat to correctly merge multi-part text content, especially during streaming responses."
+---
+
+## What was done
+- Updated the content consolidation logic within the GeminiChat class for streaming responses to ensure text is appended to the correct part.
+- Changed the text appending mechanism from the first part to the last part of existing content when merging.
+- Introduced new private helper methods, isFirstPartText and isLastPartText, to precisely check the type and position of text content within multi-part responses.
+- The `packages/core/src/core/geminiChat.ts` file was modified to implement these changes, improving the accuracy of text merging.
+
+## Impact
+- Ensures accurate merging of text into multi-part content, preventing incorrect concatenation of text within streaming responses.
+- Addresses scenarios where streaming responses contain mixed content types, requiring careful and precise text merging.
+- Improves the robustness of content parsing within Gemini chat interactions, reducing potential data corruption or malformed responses.
+
+## Technical details
+- The `consolidateStreamingContent` method in `GeminiChat` was updated to utilize the new `isFirstPartText` and `isLastPartText` helpers.
+- The `isFirstPartText` helper now explicitly checks if the first part of a content object is a text string and excludes non-text part types like functionCall, inlineData, etc.
+- The `isLastPartText` helper was added to verify if the last part of a content object is a text string, also ensuring it's for a 'model' role and excluding non-text part types.
+- Text merging now targets `lastContent.parts[lastContent.parts.length - 1].text` instead of `lastContent.parts[0].text` when appropriate.
+- These changes were implemented in `packages/core/src/core/geminiChat.ts`.
+
+## Related issues
+- [#4053](https://github.com/google-gemini/gemini-cli/issues/4053)
+
+## Metadata
+- Source: github
+- Repo: google-gemini/gemini-cli
+- URL: https://github.com/google-gemini/gemini-cli/pull/6235
+- Merged: 2025-08-22T18:20:30Z

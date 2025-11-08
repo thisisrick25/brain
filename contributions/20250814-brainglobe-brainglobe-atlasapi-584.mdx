@@ -1,0 +1,36 @@
+---
+id: 584
+repo: "brainglobe/brainglobe-atlasapi"
+title: "Update docstring format"
+url: "https://github.com/brainglobe/brainglobe-atlasapi/pull/584"
+mergedAt: "2025-08-14T10:06:48Z"
+relatedIssues: ["https://github.com/brainglobe/brainglobe-atlasapi/issues/581", "https://github.com/brainglobe/brainglobe-atlasapi/issues/582"]
+summary: "Enhanced documentation by adding module-level docstrings, improving existing docstring formats to be consistent, and cleaning up code by removing unnecessary blank lines across various modules."
+---
+
+## What was done
+- Added module-level docstrings to `bg_atlas.py`, `cli.py`, `core.py`, `descriptors.py`, `list_atlases.py`, `structure_class.py`, `structure_tree_util.py`, `update_atlases.py`, and `utils.py`.
+- Improved existing docstrings for various methods and properties (e.g., `remote_url`, `check_latest_version`, `reference`, `annotation`, `structure_from_coords`, `mesh_from_structure`, `get_structure_ancestors`, `__getitem__`) to follow consistent formatting and provide clearer descriptions.
+- Removed unnecessary blank lines in several files to improve code readability.
+- This pull request primarily involved refactoring for documentation consistency and code cleanup, with 135 additions and 32 deletions across 9 files.
+
+## Impact
+- Improved code clarity and maintainability for developers, making it easier to understand and contribute to the codebase.
+- Enhanced user understanding of the API functions and modules through clearer and more consistent documentation.
+- No breaking changes, performance impacts, or security implications were introduced.
+
+## Technical details
+- Module-level docstrings were added to provide a high-level overview of each Python file's purpose.
+- Method and property docstrings were standardized to adhere to a consistent style, improving the quality of inline documentation.
+- The changes were applied across core components of the `brainglobe_atlasapi`, including `bg_atlas.py` (atlas class definition), `cli.py` (command-line interface), `core.py` (main atlas functionalities), `descriptors.py` (property descriptors), and `list_atlases.py` (atlas listing).
+- Minor code cleanup involved removing redundant blank lines, contributing to a more concise code presentation.
+
+## Related issues
+- [#581](https://github.com/brainglobe/brainglobe-atlasapi/issues/581)
+- [#582](https://github.com/brainglobe/brainglobe-atlasapi/issues/582)
+
+## Metadata
+- Source: github
+- Repo: brainglobe/brainglobe-atlasapi
+- URL: https://github.com/brainglobe/brainglobe-atlasapi/pull/584
+- Merged: 2025-08-14T10:06:48Z
