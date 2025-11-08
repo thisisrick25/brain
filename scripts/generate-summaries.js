@@ -1,6 +1,7 @@
 const fs = require("fs");
 const path = require("path");
 const { GoogleGenAI } = require("@google/genai");
+require("dotenv").config();
 
 const GIT_USERNAME = process.env.GIT_USERNAME;
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
@@ -108,25 +109,57 @@ async function fetchGithubPRs() {
   const data = await fetchGraphQLGithub(GITHUB_GRAPHQL_QUERY);
   const nodes = data?.search?.nodes || [];
 
-  const contributions = nodes.map((n) => {
-    const repo = n.repository?.nameWithOwner || "";
-    const relatedIssues =
-      (n.closingIssuesReferences?.nodes || []).map((r) => ({
-        number: r.number,
-        url: r.url,
-      })) || [];
+  const contributions = await Promise.all(
+    nodes.map(async (n) => {
+      const repo = n.repository?.nameWithOwner || "";
+      const relatedIssues =
+        (n.closingIssuesReferences?.nodes || []).map((r) => ({
+          number: r.number,
+          url: r.url,
+        })) || [];
 
-    return {
-      id: n.number,
-      title: n.title,
-      repo,
-      html_url: n.url,
-      body: n.body || n.bodyText || null,
-      merged_at: n.mergedAt || null,
-      source: "github",
-      relatedIssues,
-    };
-  });
+      // Fetch patch diff using REST API
+      let patch = null;
+      try {
+        const [owner, name] = repo.split("/");
+        const patchUrl = `https://api.github.com/repos/${owner}/${name}/pulls/${n.number}.patch`;
+        const res = await fetch(patchUrl, {
+          headers: {
+            Authorization: `Bearer ${GITHUB_TOKEN}`,
+            Accept: "application/vnd.github.patch",
+          },
+        });
+        if (res.ok) {
+          patch = await res.text();
+          // Truncate if too long
+          if (patch.length > 10000) {
+            patch = patch.slice(0, 10000) + "\n... (truncated)";
+          }
+        } else {
+          console.warn(
+            `Failed to fetch patch for ${repo}#${n.number}: ${res.status}`
+          );
+        }
+      } catch (error) {
+        console.warn(
+          `Error fetching patch for ${repo}#${n.number}:`,
+          error.message
+        );
+      }
+
+      return {
+        id: n.number,
+        title: n.title,
+        repo,
+        html_url: n.url,
+        body: n.body || n.bodyText || null,
+        merged_at: n.mergedAt || null,
+        source: "github",
+        relatedIssues,
+        patch,
+      };
+    })
+  );
 
   return contributions;
 }
@@ -135,7 +168,7 @@ async function fetchGitLabMRs() {
   const data = await fetchGraphQLGitLab(GITLAB_GRAPHQL_QUERY);
   const nodes = data?.user?.authoredMergeRequests?.nodes || [];
 
-  // Fetch related issues for each MR using REST API
+  // Fetch related issues and diffs for each MR using REST API
   const contributions = await Promise.all(
     nodes.map(async (n) => {
       const repo = n.project?.fullPath || "";
@@ -168,6 +201,33 @@ async function fetchGitLabMRs() {
         );
       }
 
+      // Fetch patch diff using REST API
+      let patch = null;
+      try {
+        const patchUrl = `https://gitlab.com/api/v4/projects/${projectId}/merge_requests/${mrIid}.patch`;
+        const res = await fetch(patchUrl, {
+          headers: {
+            Authorization: `Bearer ${GITLAB_TOKEN}`,
+          },
+        });
+        if (res.ok) {
+          patch = await res.text();
+          // Truncate if too long
+          if (patch.length > 10000) {
+            patch = patch.slice(0, 10000) + "\n... (truncated)";
+          }
+        } else {
+          console.warn(
+            `Failed to fetch patch for ${repo}#${mrIid}: ${res.status}`
+          );
+        }
+      } catch (error) {
+        console.warn(
+          `Error fetching patch for ${repo}#${mrIid}:`,
+          error.message
+        );
+      }
+
       return {
         id: n.iid,
         title: n.title,
@@ -177,6 +237,7 @@ async function fetchGitLabMRs() {
         merged_at: n.mergedAt || null,
         source: "gitlab",
         relatedIssues,
+        patch,
       };
     })
   );
@@ -190,12 +251,13 @@ async function generateSummary(pr) {
   const prompt = `You are generating raw MDX. NEVER wrap output in triple backticks or a code block. Output ONLY the MDX document described.
 
 Context:
-Platform: ${pr.source}
-Repo: ${pr.repo}
-Title: ${pr.title}
-URL: ${pr.html_url}
-MergedAt: ${pr.merged_at || "(unknown)"}
-RelatedIssues: ${pr.relatedIssues.map((i) => i.url).join(", ") || "None"}
+- Platform: ${pr.source}
+- Repo: ${pr.repo}
+- Title: ${pr.title}
+- URL: ${pr.html_url}
+- MergedAt: ${pr.merged_at || "(unknown)"}
+- RelatedIssues: ${pr.relatedIssues.map((i) => i.url).join(", ") || "None"}
+- Patch: ${pr.patch ? `\`\`\`diff\n${pr.patch}\n\`\`\`` : "No patch available"}
 
 MDX structure:
 ---
