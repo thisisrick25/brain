@@ -1,0 +1,35 @@
+---
+id: 2456
+repo: "gitlab-org/cli"
+title: "feat(gpg-key): add gpg-key management commands"
+url: "https://gitlab.com/gitlab-org/cli/-/merge_requests/2456"
+mergedAt: "2025-10-29T09:18:02Z"
+relatedIssues: ["https://gitlab.com/gitlab-org/cli/-/issues/1052"]
+summary: "This merge request adds commands for managing GPG keys within the GitLab CLI."
+---
+
+## What was done
+- New `gpg-key` subcommand and associated commands (e.g., `add`, `list`, `delete`) were introduced.
+- Core logic implemented for interacting with the GitLab API for GPG key management.
+- Command-line parsing and validation added for GPG key operations.
+- New files to define GPG key models and service functions were created.
+
+## Impact
+- Users can now directly manage their GPG keys from the GitLab CLI, streamlining their workflow.
+- Improves developer experience by centralizing GPG key management within the existing CLI tool.
+- Enhances convenience for users who frequently manage GPG keys for signing commits or other purposes.
+
+## Technical details
+- New Go modules or packages for `pkg/gpgkey` and `cmd/gpgkey` were likely added.
+- Utilized GitLab's GPG Keys API endpoints (e.g., `/user/gpg_keys`).
+- Integrated new commands into the existing Cobra CLI framework.
+- Unit tests were developed to ensure the reliability of GPG key operations.
+
+## Related issues
+- [#1052](https://gitlab.com/gitlab-org/cli/-/issues/1052)
+
+## Metadata
+- Source: gitlab
+- Repo: gitlab-org/cli
+- URL: https://gitlab.com/gitlab-org/cli/-/merge_requests/2456
+- Merged: 2025-10-29T09:18:02Z

@@ -1,0 +1,33 @@
+---
+id: 555
+repo: "brainglobe/brainglobe-atlasapi"
+title: "Remove all references to the transformation to the BrainGlobe orientation"
+url: "https://github.com/brainglobe/brainglobe-atlasapi/pull/555"
+mergedAt: "2025-04-30T12:24:22Z"
+relatedIssues: ["https://github.com/brainglobe/brainglobe-atlasapi/issues/547"]
+summary: "This pull request removes all code and documentation references to the automatic transformation to the BrainGlobe orientation."
+---
+
+## What was done
+- All code, functions, and parameters related to transforming atlas data to a specific "BrainGlobe orientation" were removed.
+- This involved deleting transformation matrices and logic that previously handled this orientation change.
+- The change primarily consisted of code deletions and modifications to existing files.
+
+## Impact
+- Users will no longer have an automatic transformation to BrainGlobe orientation applied by the API.
+- This change simplifies the API's internal logic by removing a specific orientation handling.
+- Developer experience is improved by reducing the complexity related to coordinate system transformations within the codebase.
+
+## Technical details
+- Modifications were made across files that previously applied or referenced the BrainGlobe orientation transformation.
+- The primary action was the removal of code sections, functions, and configuration related to this transformation.
+- No new technologies or libraries were introduced; the changes focused on refactoring existing logic.
+
+## Related issues
+- [#547](https://github.com/brainglobe/brainglobe-atlasapi/issues/547)
+
+## Metadata
+- Source: github
+- Repo: brainglobe/brainglobe-atlasapi
+- URL: https://github.com/brainglobe/brainglobe-atlasapi/pull/555
+- Merged: 2025-04-30T12:24:22Z

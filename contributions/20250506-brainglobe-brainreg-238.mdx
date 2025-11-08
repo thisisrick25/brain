@@ -1,0 +1,34 @@
+---
+id: 238
+repo: "brainglobe/brainreg"
+title: "[Feature] Specify units for voxel sizes in napari plugin"
+url: "https://github.com/brainglobe/brainreg/pull/238"
+mergedAt: "2025-05-06T09:36:56Z"
+relatedIssues: ["https://github.com/brainglobe/brainreg/issues/223"]
+summary: "This feature allows users to specify the units for voxel sizes directly within the napari plugin for brainreg, improving clarity and usability."
+---
+
+## What was done
+- Added a mechanism to specify units for voxel sizes in the napari plugin GUI.
+- Modified the napari plugin interface to include a unit selection dropdown or input field.
+- Ensured the selected units are correctly propagated and used by the brainreg backend.
+- Implemented changes within the `brainreg_segment.napari_brainreg_standardise` component.
+
+## Impact
+- Users can now explicitly define the units for voxel sizes (e.g., microns, mm) when running brainreg through the napari plugin.
+- Improves the clarity and correctness of inputs for image registration and atlas alignment.
+- Reduces potential errors arising from ambiguity around voxel size units.
+
+## Technical details
+- Modified relevant files in the `brainreg_segment/napari_brainreg_standardise` directory to add UI elements for unit selection.
+- Integrated a new parameter for units into the function calls responsible for processing voxel sizes.
+- Utilized existing napari widget capabilities for user input.
+
+## Related issues
+- [#223](https://github.com/brainglobe/brainreg/issues/223)
+
+## Metadata
+- Source: github
+- Repo: brainglobe/brainreg
+- URL: https://github.com/brainglobe/brainreg/pull/238
+- Merged: 2025-05-06T09:36:56Z
