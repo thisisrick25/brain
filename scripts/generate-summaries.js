@@ -187,20 +187,17 @@ async function fetchGitLabMRs() {
 async function generateSummary(pr) {
   const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
-  const prompt = `Generate a comprehensive summary for this ${
-    pr.source === "gitlab" ? "GitLab Merge Request" : "GitHub Pull Request"
-  } in MDX format. This contribution was made to the repository "${
-    pr.repo
-  }" and ${
-    pr.relatedIssues.length > 0
-      ? `addresses ${pr.relatedIssues.length} related issue${
-          pr.relatedIssues.length > 1 ? "s" : ""
-        }`
-      : "has no explicitly linked issues"
-  }.
+  const prompt = `You are generating raw MDX. NEVER wrap output in triple backticks or a code block. Output ONLY the MDX document described.
 
-Use the exact following template structure, filling in the frontmatter and sections with detailed, specific information based on the contribution details.
+Context:
+Platform: ${pr.source}
+Repo: ${pr.repo}
+Title: ${pr.title}
+URL: ${pr.html_url}
+MergedAt: ${pr.merged_at || "(unknown)"}
+RelatedIssues: ${pr.relatedIssues.map((i) => i.url).join(", ") || "None"}
 
+MDX structure:
 ---
 id: ${pr.id}
 repo: "${pr.repo}"
@@ -213,47 +210,37 @@ summary: "A brief one-sentence summary of the ${
   }."
 ---
 
-# Contribution Summary
-
 ## What was done
-
-- Provide specific details about the code changes, features added, bugs fixed, or improvements made
-- Mention the main files or components that were modified
-- Describe the implementation approach or solution
+- Concrete, technical changes (files, components, features).
+- Implementation approach (patterns/algorithms if relevant).
 
 ## Impact
-
-- Explain how these changes affect users, performance, or the system
-- Describe any breaking changes, new capabilities, or improved functionality
-- Mention the scope of impact (e.g., affects all users, specific feature, internal improvement)
+- Effects on users, performance, reliability, DX.
+- Note breaking changes or migrations (if any).
 
 ## Technical details
+- Notable files/paths touched; technologies used.
+- Design / architectural decisions.
+- Testing or validation notes if inferable.
 
-- Provide technical details like modified files, technologies used, algorithms implemented, etc.
-- Include code patterns, frameworks, or libraries involved
-- Mention any architectural changes or design decisions
+## Related issues
+${
+  pr.relatedIssues.length > 0
+    ? pr.relatedIssues.map((i) => `- [#${i.number}](${i.url})`).join("\n")
+    : "- None"
+}
 
-**Related issues**: ${
-    pr.relatedIssues.length > 0
-      ? pr.relatedIssues.map((i) => `[#${i.number}](${i.url})`).join(", ")
-      : "None"
-  }
+## Metadata
+- Source: ${pr.source}
+- Repo: ${pr.repo}
+- URL: ${pr.html_url}
+- Merged: ${pr.merged_at || "(unknown)"}
 
-${pr.source === "gitlab" ? "MR" : "PR"} Title: ${pr.title}
-${pr.source === "gitlab" ? "MR" : "PR"} Body: ${pr.body || "No description."}
-**Related issues**: ${pr.relatedIssues
-    .map((i) => `[#${i.number}](${i.url})`)
-    .join(", ")}
-
-INSTRUCTIONS:
-- Be specific and technical in your descriptions
-- Focus on the actual changes made, not just high-level descriptions
-- Include concrete examples where relevant
-- Explain the "why" and "how" of the changes
-- Make the summary informative for developers who want to understand the contribution
-- Ensure the frontmatter is correctly formatted as YAML
-- Do not wrap the output in any code blocks, markdown formatting, or backticks
-- Output the raw MDX content only`;
+Rules:
+- DO NOT include backticks.
+- DO NOT guess unavailable details.
+- Keep lists brief but informative.
+- Output ONLY what is specified above.`;
 
   const response = await ai.models.generateContent({
     model: "gemini-2.5-flash",
