@@ -1,0 +1,33 @@
+---
+id: 8737
+repo: "sktime/sktime"
+title: "[ENH] add tests for TSC `evaluate` parallelization backends "
+url: "https://github.com/sktime/sktime/pull/8737"
+mergedAt: "2025-08-24T12:46:02Z"
+relatedIssues: ["https://github.com/sktime/sktime/issues/8703"]
+summary: "This pull request adds new tests to verify the functionality of different parallelization backends within the `evaluate` method for Time Series Classifiers."
+---
+
+## What was done
+- Added new test cases specifically for the `evaluate` method of Time Series Classifiers (TSCs).
+- Implemented tests to cover various parallelization backends used by the `evaluate` method.
+- Ensured proper functioning of parallel execution in TSC evaluation.
+
+## Impact
+- Increases the reliability and robustness of the `evaluate` method's parallel execution for TSCs.
+- Provides confidence that different parallelization backends operate correctly and consistently.
+- Improves developer experience by validating parallel processing capabilities.
+
+## Technical details
+- New test files or sections were added to the testing suite for Time Series Classifiers.
+- The tests likely involve mocking or setting up environments to simulate different parallel backends.
+- Validation logic was implemented to check the correct output and behavior of parallel `evaluate` calls.
+
+## Related issues
+- [#8703](https://github.com/sktime/sktime/issues/8703)
+
+## Metadata
+- Source: github
+- Repo: sktime/sktime
+- URL: https://github.com/sktime/sktime/pull/8737
+- Merged: 2025-08-24T12:46:02Z
