@@ -1,7 +1,6 @@
 const fs = require("fs");
 const path = require("path");
 const { GoogleGenAI } = require("@google/genai");
-require("dotenv").config();
 
 const GIT_USERNAME = process.env.GIT_USERNAME;
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
