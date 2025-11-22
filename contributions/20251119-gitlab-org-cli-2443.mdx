@@ -1,0 +1,37 @@
+---
+id: 2443
+repo: "gitlab-org/cli"
+title: "feat(token-cache): add token-cache commands for GitLab Agent tokens"
+url: "https://gitlab.com/gitlab-org/cli/-/merge_requests/2443"
+mergedAt: "2025-11-19T09:29:19Z"
+relatedIssues: ["https://gitlab.com/gitlab-org/cli/-/issues/7953"]
+summary: "This merge request adds new `glab cluster agent token-cache` commands to manage cached GitLab Agent tokens, providing users with visibility and control over credentials."
+---
+
+## What was done
+- Implemented a new `glab cluster agent token-cache` command group.
+- Added `glab cluster agent token-cache list` to list cached tokens from keyring and filesystem caches, with filtering by agent IDs and cache sources.
+- Added `glab cluster agent token-cache clear` to remove cached tokens, supporting automatic revocation on the GitLab server.
+- Introduced command flags such as `--agent` for filtering, and `--keyring`, `--filesystem` to specify cache sources.
+- The `clear` command also includes a `--revoke` flag (defaulting to true) for server-side token revocation.
+
+## Impact
+- Users gain improved visibility and control over previously opaque cached GitLab Agent tokens.
+- Enhances the management of credentials used by the Kubernetes credential plugin.
+- Provides a direct way for users to list and clear their cached agent tokens.
+
+## Technical details
+- New commands `list` and `clear` were added under the `glab cluster agent token-cache` subcommand.
+- The implementation manages tokens stored in both keyring and filesystem cache mechanisms.
+- Functionality includes filtering tokens based on agent IDs and specifying cache sources.
+- The `clear` command can trigger server-side token revocation through a configurable flag.
+- This feature is categorized as a new feature and includes relevant documentation.
+
+## Related issues
+- [#7953](https://gitlab.com/gitlab-org/cli/-/issues/7953)
+
+## Metadata
+- Source: gitlab
+- Repo: gitlab-org/cli
+- URL: https://gitlab.com/gitlab-org/cli/-/merge_requests/2443
+- Merged: 2025-11-19T09:29:19Z
