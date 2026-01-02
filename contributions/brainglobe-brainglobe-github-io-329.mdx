@@ -1,0 +1,37 @@
+---
+id: 329
+repo: "brainglobe/brainglobe.github.io"
+title: "Built API docs from the docstrings using Sphinx+autodocs"
+url: "https://github.com/brainglobe/brainglobe.github.io/pull/329"
+mergedAt: "2025-08-27T09:31:42Z"
+relatedIssues: ["https://github.com/brainglobe/brainglobe.github.io/issues/4"]
+summary: "This pull request establishes an automated system for generating API documentation from docstrings using Sphinx and autodoc, initially implemented for the `brainglobe-atlasapi` project."
+---
+
+## What was done
+- Introduced `fetch_external.py` to clone or update external Brainglobe repositories, such as `brainglobe-atlasapi`, into a local `external/` directory.
+- Configured Sphinx (`docs/source/conf.py`) with `sphinx.ext.autodoc`, `sphinx.ext.autosummary`, and `sphinx.ext.coverage` extensions to support API documentation generation.
+- Created reStructuredText (`.rst`) files to auto-generate API reference documentation for the `brainglobe-atlasapi` module, specifically for `BrainGlobeAtlas` and `show_atlases`.
+- Updated the `brainglobe-atlasapi` documentation index to include a link to the new API reference.
+- Modified the GitHub Actions workflow (`docs_build_and_deploy.yml`) to incorporate Python setup and execution of `fetch_external.py` before the Sphinx build process.
+- Cleaned up redundant and temporary documentation files and configurations.
+
+## Impact
+- **Developers:** Streamlines the process of generating and maintaining API documentation, ensuring it stays current with code changes and reducing manual effort.
+- **Users:** Provides comprehensive, automatically generated API reference documentation for Brainglobe projects, enhancing discoverability and understanding of library components.
+- **Project:** Improves the overall documentation quality and consistency across Brainglobe projects by standardizing API doc generation.
+
+## Technical details
+- Employs Sphinx, a popular Python documentation generator, in conjunction with its `autodoc` and `autosummary` extensions to extract documentation directly from Python docstrings.
+- Utilizes a custom Python script (`fetch_external.py`) for managing external Git repository dependencies within the documentation build environment.
+- Integrated into GitHub Actions CI/CD pipeline to automate the setup of Python, fetching dependencies, and building documentation.
+- Switched specific API documentation sections from Markdown (`.md`) to reStructuredText (`.rst`) for full compatibility with Sphinx's advanced features.
+
+## Related issues
+- [#4](https://github.com/brainglobe/brainglobe.github.io/issues/4)
+
+## Metadata
+- Source: github
+- Repo: brainglobe/brainglobe.github.io
+- URL: https://github.com/brainglobe/brainglobe.github.io/pull/329
+- Merged: 2025-08-27T09:31:42Z

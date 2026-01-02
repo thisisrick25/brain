@@ -1,0 +1,33 @@
+---
+id: 2456
+repo: "gitlab-org/cli"
+title: "feat(gpg-key): add gpg-key management commands"
+url: "https://gitlab.com/gitlab-org/cli/-/merge_requests/2456"
+mergedAt: "2025-10-29T09:18:02Z"
+relatedIssues: ["https://gitlab.com/gitlab-org/cli/-/issues/1052"]
+summary: "This Merge Request introduces a suite of GPG key management commands to the `glab` CLI, enabling users to add, list, retrieve, and delete GPG keys associated with their GitLab account."
+---
+
+## What was done
+- Added `glab gpg-key add [key-file]` to upload a GPG key.
+- Added `glab gpg-key list [--show-id]` to display GPG keys for the authenticated user.
+- Added `glab gpg-key get <key-id>` to retrieve a specific GPG key by ID.
+- Added `glab gpg-key delete <key-id>` to remove a specific GPG key by ID.
+
+## Impact
+- Users can now conveniently manage their GPG keys directly via the `glab` command-line interface.
+- Improves efficiency for tasks requiring GPG key interaction, such as signing commits.
+- No breaking changes introduced.
+
+## Technical details
+- New subcommands were implemented under `glab gpg-key` to interact with GitLab's API endpoints for GPG key management.
+- The implementation adds support for basic CRUD (Create, Read, Update, Delete) operations on GPG keys through the CLI.
+
+## Related issues
+- [#1052](https://gitlab.com/gitlab-org/cli/-/issues/1052)
+
+## Metadata
+- Source: gitlab
+- Repo: gitlab-org/cli
+- URL: https://gitlab.com/gitlab-org/cli/-/merge_requests/2456
+- Merged: 2025-10-29T09:18:02Z
