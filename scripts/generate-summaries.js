@@ -45,15 +45,52 @@ const GITLAB_GRAPHQL_QUERY = `query {
   }
 }`;
 
-// List of PRs to ignore (add PR IDs here), format: "owner/repo#number"
+// List of PRs to ignore
 const ignoredPRs = [
   "open-minds/awesome-openminds-team#106",
   "shrutikapoor08/devjoke#610",
-]; // e.g., ["owner/repo#123", "other/repo#456"]
+];
 
 if (!GITHUB_TOKEN) throw new Error("GITHUB_TOKEN is required");
 if (!GITLAB_TOKEN) throw new Error("GITLAB_TOKEN is required");
 if (!GEMINI_API_KEY) throw new Error("GEMINI_API_KEY is required");
+
+// --- Helpers ---
+
+// Sleep helper for rate limiting
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// Clean MDX output (strip markdown code blocks if the LLM includes them)
+function cleanMDX(text) {
+  if (!text) return "";
+  // Remove wrapping ```mdx, ```markdown, or just ```
+  return text.replace(/^```[a-z]*\s*/i, "").replace(/\s*```$/, "");
+}
+
+// Generic patch fetcher
+async function fetchPatch(url, token, type = "github") {
+  try {
+    const headers = { Authorization: `Bearer ${token}` };
+    if (type === "github") {
+      headers["Accept"] = "application/vnd.github.patch";
+    }
+
+    const res = await fetch(url, { headers });
+    if (res.ok) {
+      let patch = await res.text();
+      if (patch.length > 15000) {
+        patch = patch.slice(0, 15000) + "\n... (truncated)";
+      }
+      return patch;
+    } else {
+      console.warn(`Failed to fetch patch from ${url}: ${res.status}`);
+      return null;
+    }
+  } catch (error) {
+    console.warn(`Error fetching patch from ${url}:`, error.message);
+    return null;
+  }
+}
 
 // GitHub GraphQL fetch helper
 async function fetchGraphQLGithub(query) {
@@ -73,10 +110,8 @@ async function fetchGraphQLGithub(query) {
     );
   }
   if (json.errors) {
-    // don't fail hard for individual errors, but surface them
-    console.warn("GitHub GraphQL returned errors", json.errors);
+    console.warn("GitHub GraphQL errors:", json.errors);
   }
-
   return json.data || {};
 }
 
@@ -98,53 +133,30 @@ async function fetchGraphQLGitLab(query) {
     );
   }
   if (json.errors) {
-    console.warn("GitLab GraphQL returned errors", json.errors);
+    console.warn("GitLab GraphQL errors:", json.errors);
   }
-
   return json.data || {};
 }
+
+// --- Data Fetchers ---
 
 async function fetchGithubPRs() {
   const data = await fetchGraphQLGithub(GITHUB_GRAPHQL_QUERY);
   const nodes = data?.search?.nodes || [];
 
-  const contributions = await Promise.all(
+  return Promise.all(
     nodes.map(async (n) => {
       const repo = n.repository?.nameWithOwner || "";
-      const relatedIssues =
-        (n.closingIssuesReferences?.nodes || []).map((r) => ({
+      const relatedIssues = (n.closingIssuesReferences?.nodes || []).map(
+        (r) => ({
           number: r.number,
           url: r.url,
-        })) || [];
+        })
+      );
 
-      // Fetch patch diff using REST API
-      let patch = null;
-      try {
-        const [owner, name] = repo.split("/");
-        const patchUrl = `https://api.github.com/repos/${owner}/${name}/pulls/${n.number}.patch`;
-        const res = await fetch(patchUrl, {
-          headers: {
-            Authorization: `Bearer ${GITHUB_TOKEN}`,
-            Accept: "application/vnd.github.patch",
-          },
-        });
-        if (res.ok) {
-          patch = await res.text();
-          // Truncate if too long
-          if (patch.length > 10000) {
-            patch = patch.slice(0, 10000) + "\n... (truncated)";
-          }
-        } else {
-          console.warn(
-            `Failed to fetch patch for ${repo}#${n.number}: ${res.status}`
-          );
-        }
-      } catch (error) {
-        console.warn(
-          `Error fetching patch for ${repo}#${n.number}:`,
-          error.message
-        );
-      }
+      const [owner, name] = repo.split("/");
+      const patchUrl = `https://api.github.com/repos/${owner}/${name}/pulls/${n.number}.patch`;
+      const patch = await fetchPatch(patchUrl, GITHUB_TOKEN, "github");
 
       return {
         id: n.number,
@@ -159,28 +171,24 @@ async function fetchGithubPRs() {
       };
     })
   );
-
-  return contributions;
 }
 
 async function fetchGitLabMRs() {
   const data = await fetchGraphQLGitLab(GITLAB_GRAPHQL_QUERY);
   const nodes = data?.user?.authoredMergeRequests?.nodes || [];
 
-  // Fetch related issues and diffs for each MR using REST API
-  const contributions = await Promise.all(
+  return Promise.all(
     nodes.map(async (n) => {
       const repo = n.project?.fullPath || "";
       const projectId = encodeURIComponent(repo);
       const mrIid = n.iid;
 
+      // Fetch related issues
       let relatedIssues = [];
       try {
         const closesIssuesUrl = `https://gitlab.com/api/v4/projects/${projectId}/merge_requests/${mrIid}/closes_issues`;
         const res = await fetch(closesIssuesUrl, {
-          headers: {
-            Authorization: `Bearer ${GITLAB_TOKEN}`,
-          },
+          headers: { Authorization: `Bearer ${GITLAB_TOKEN}` },
         });
         if (res.ok) {
           const issues = await res.json();
@@ -188,44 +196,16 @@ async function fetchGitLabMRs() {
             number: issue.iid,
             url: issue.web_url,
           }));
-        } else {
-          console.warn(
-            `Failed to fetch closes_issues for ${repo}#${mrIid}: ${res.status}`
-          );
         }
       } catch (error) {
         console.warn(
-          `Error fetching closes_issues for ${repo}#${mrIid}:`,
-          error
-        );
-      }
-
-      // Fetch patch diff using REST API
-      let patch = null;
-      try {
-        const patchUrl = `https://gitlab.com/api/v4/projects/${projectId}/merge_requests/${mrIid}.patch`;
-        const res = await fetch(patchUrl, {
-          headers: {
-            Authorization: `Bearer ${GITLAB_TOKEN}`,
-          },
-        });
-        if (res.ok) {
-          patch = await res.text();
-          // Truncate if too long
-          if (patch.length > 10000) {
-            patch = patch.slice(0, 10000) + "\n... (truncated)";
-          }
-        } else {
-          console.warn(
-            `Failed to fetch patch for ${repo}#${mrIid}: ${res.status}`
-          );
-        }
-      } catch (error) {
-        console.warn(
-          `Error fetching patch for ${repo}#${mrIid}:`,
+          `Error fetching related issues for ${repo}#${mrIid}:`,
           error.message
         );
       }
+
+      const patchUrl = `https://gitlab.com/api/v4/projects/${projectId}/merge_requests/${mrIid}.patch`;
+      const patch = await fetchPatch(patchUrl, GITLAB_TOKEN, "gitlab");
 
       return {
         id: n.iid,
@@ -240,14 +220,16 @@ async function fetchGitLabMRs() {
       };
     })
   );
-
-  return contributions;
 }
+
+// --- Generator ---
 
 async function generateSummary(pr) {
   const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
-  const prompt = `You are generating raw MDX. NEVER wrap output in triple backticks or a code block. Output ONLY the MDX document described.
+  const prompt = `You are an expert technical writer. Generate a concise, informative MDX summary for the following ${
+    pr.source === "gitlab" ? "Merge Request" : "Pull Request"
+  }.
 
 Context:
 - Platform: ${pr.source}
@@ -256,9 +238,16 @@ Context:
 - URL: ${pr.html_url}
 - MergedAt: ${pr.merged_at || "(unknown)"}
 - RelatedIssues: ${pr.relatedIssues.map((i) => i.url).join(", ") || "None"}
-- Patch: ${pr.patch ? `\`\`\`diff\n${pr.patch}\n\`\`\`` : "No patch available"}
+- Patch:
+${pr.patch ? `\`\`\`diff\n${pr.patch}\n\`\`\`` : "No patch available"}
 
-MDX structure:
+MDX Format Requirements:
+1. Start with the YAML frontmatter exactly as shown.
+2. Follow with the content sections.
+3. Use simple, clear language. 
+4. Do NOT output markdown code fences (like \`\`\`mdx) around the entire output.
+
+Desired Output Structure:
 ---
 id: ${pr.id}
 repo: "${pr.repo}"
@@ -266,34 +255,18 @@ title: "${pr.title.replace(/"/g, '\\"')}"
 url: "${pr.html_url}"
 mergedAt: "${pr.merged_at || ""}"
 relatedIssues: [${pr.relatedIssues.map((i) => `"${i.url}"`).join(", ")}]
-summary: "A brief one-sentence summary of the ${
-    pr.source === "gitlab" ? "merge request" : "pull request"
-  }."
+summary: "A brief one-sentence summary of the PR."
 ---
 
 ## What was done
-- Concrete, technical changes (files, components, features added/modified/deleted).
-- Implementation approach (patterns, algorithms, or methodologies used).
-- Specific files or directories affected.
-- New features, bug fixes, or refactoring details.
-- Code changes summary (additions, deletions, modifications).
+- Bullet points of technical changes (files, logic, features).
 
 ## Impact
-- Effects on users, performance, reliability, and developer experience.
-- Breaking changes, migrations, or backward compatibility notes.
-- User-facing improvements or regressions.
-- Performance gains/losses or resource usage changes.
-- Security implications or improvements.
-- Developer workflow or tooling changes.
+- User-facing or developer-facing impact.
+- Breaking changes (if any).
 
 ## Technical details
-- Notable files/paths touched and their purposes.
-- Technologies, libraries, or frameworks used/introduced.
-- Design and architectural decisions made.
-- Database schema changes or data migrations.
-- Testing or validation approaches (unit tests, integration tests, etc.).
-- Dependencies added, updated, or removed.
-- Configuration or environment changes.
+- Specific libraries, patterns, or architecture decisions.
 
 ## Related issues
 ${
@@ -307,59 +280,61 @@ ${
 - Repo: ${pr.repo}
 - URL: ${pr.html_url}
 - Merged: ${pr.merged_at || "(unknown)"}
+`;
 
-Rules:
-- DO NOT include backticks.
-- DO NOT guess unavailable details.
-- Keep lists brief but informative.
-- Output ONLY what is specified above.`;
+  try {
+    const response = await ai.models.generateContent({
+      model: "gemini-2.5-flash",
+      contents: prompt,
+    });
 
-  const response = await ai.models.generateContent({
-    model: "gemini-2.5-flash",
-    contents: prompt,
-  });
-
-  return response.text;
+    // Sanitize the output just in case
+    return cleanMDX(response.text);
+  } catch (error) {
+    console.error(`Gemini API Error for ${pr.repo}#${pr.id}:`, error.message);
+    throw error;
+  }
 }
+
+// --- Main ---
 
 async function main() {
   const allContributions = [];
 
-  // Fetch GitHub PRs
-  try {
-    const prs = await fetchGithubPRs();
-    allContributions.push(...prs);
-  } catch (error) {
-    if (error instanceof Error && /GITHUB_TOKEN/.test(error.message)) {
-      console.warn("Skipping GitHub contributions: GITHUB_TOKEN not provided");
-    } else {
-      console.error("Failed to fetch GitHub contributions", error);
-    }
-  }
+  // Parallel fetching of PR/MR metadata
+  console.log("Fetching collection data...");
+  const [githubResults, gitlabResults] = await Promise.allSettled([
+    fetchGithubPRs().catch((e) => {
+      console.warn("GitHub fetch failed:", e.message);
+      return [];
+    }),
+    fetchGitLabMRs().catch((e) => {
+      console.warn("GitLab fetch failed:", e.message);
+      return [];
+    }),
+  ]);
 
-  // Fetch GitLab MRs
-  try {
-    const mrs = await fetchGitLabMRs();
-    allContributions.push(...mrs);
-  } catch (error) {
-    if (error instanceof Error && /GITLAB_TOKEN/.test(error.message)) {
-      console.warn("Skipping GitLab contributions: GITLAB_TOKEN not provided");
-    } else {
-      console.error("Failed to fetch GitLab contributions", error);
-    }
-  }
+  if (githubResults.status === "fulfilled")
+    allContributions.push(...githubResults.value);
+  if (gitlabResults.status === "fulfilled")
+    allContributions.push(...gitlabResults.value);
+
+  console.log(`Found ${allContributions.length} total contributions.`);
 
   const contributionsDir = "contributions";
   if (!fs.existsSync(contributionsDir)) {
     fs.mkdirSync(contributionsDir);
   }
 
+  // Process sequentially to be gentle on Gemini Rate Limits
+  // (Gemini Flash has high limits, but safest to process one by one or small batches)
+  let count = 0;
   for (const pr of allContributions) {
-    // Check if PR/MR is in ignored list
     if (ignoredPRs.includes(`${pr.repo}#${pr.id}`)) {
       console.log(`Ignoring ${pr.repo}#${pr.id}`);
       continue;
     }
+
     const repoSlug = pr.repo.replace("/", "-");
     const dateStr = pr.merged_at
       ? pr.merged_at.slice(0, 10).replace(/-/g, "")
@@ -368,26 +343,29 @@ async function main() {
     const filePath = path.join(contributionsDir, fileName);
 
     if (fs.existsSync(filePath)) {
-      console.log(`Skipping ${fileName}, already exists.`);
+      // console.log(`Skipping ${fileName}, already exists.`);
       continue;
     }
 
     console.log(
-      `Generating summary for ${pr.source === "gitlab" ? "MR" : "PR"} ${
-        pr.id
-      } in ${pr.repo}`
+      `Generating summary for ${pr.repo}#${pr.id} (${count + 1}/${
+        allContributions.length
+      })...`
     );
+
     try {
       const summaryMDX = await generateSummary(pr);
-      fs.writeFileSync(filePath, summaryMDX);
+      if (summaryMDX) {
+        fs.writeFileSync(filePath, summaryMDX);
+        console.log(`✔ Saved ${fileName}`);
+      }
+
+      // Small delay to avoid rate limits
+      await sleep(1000);
     } catch (error) {
-      console.error(
-        `Failed to generate summary for ${
-          pr.source === "gitlab" ? "MR" : "PR"
-        } ${pr.id}:`,
-        error
-      );
+      console.error(`✘ Failed to generate ${fileName}`);
     }
+    count++;
   }
 }
 
