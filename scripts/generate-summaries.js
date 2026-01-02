@@ -335,11 +335,10 @@ async function main() {
       continue;
     }
 
-    const repoSlug = pr.repo.replace("/", "-");
-    const dateStr = pr.merged_at
-      ? pr.merged_at.slice(0, 10).replace(/-/g, "")
-      : "00000000";
-    const fileName = `${dateStr}-${repoSlug}-${pr.id}.mdx`;
+    // Generate slug-friendly filename: owner-repo-id.mdx
+    // e.g. "google-gemini-cli-123.mdx"
+    const safeRepo = pr.repo.replace(/[\/\.]/g, "-").toLowerCase(); // replace / and . with -
+    const fileName = `${safeRepo}-${pr.id}.mdx`;
     const filePath = path.join(contributionsDir, fileName);
 
     if (fs.existsSync(filePath)) {
