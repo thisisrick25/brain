@@ -1,0 +1,34 @@
+---
+id: 8737
+repo: "sktime/sktime"
+title: "[ENH] add tests for TSC `evaluate` parallelization backends "
+url: "https://github.com/sktime/sktime/pull/8737"
+mergedAt: "2025-08-24T12:46:02Z"
+relatedIssues: ["https://github.com/sktime/sktime/issues/8703"]
+summary: "This PR enhances the test suite for the Time Series Classifier (TSC) `evaluate` function by parameterizing parallelization backend tests to cover various configurations."
+---
+
+## What was done
+- Modified `sktime/classification/model_evaluation/tests/test_evaluate.py`.
+- Introduced dynamic testing for different parallelization backends in `evaluate` by importing and utilizing `_get_parallel_test_fixtures`.
+- Parameterized the `test_evaluate_parallel_backend` function with `pytest.mark.parametrize` to test various backend configurations.
+- Replaced hardcoded backend parameters (e.g., `backend="loky"`) with dynamic values sourced from the test fixtures.
+- Included a minor style fix for mixed line endings in the test file.
+
+## Impact
+- **Developer-facing:** Significantly improves the robustness and coverage of tests for the `evaluate` function's parallel execution. Developers can be more confident that `evaluate` functions correctly across different parallelization backends, enhancing the overall reliability of `sktime`'s parallel processing capabilities.
+- No direct user-facing changes to `evaluate`'s functionality or behavior.
+- No breaking changes.
+
+## Technical details
+- Leverages `pytest.mark.parametrize` for efficient and comprehensive testing of multiple parallelization backend configurations with a single test function.
+- Utilizes `sktime.utils.parallel._get_parallel_test_fixtures` to dynamically retrieve standard backend setup dictionaries, simplifying test configuration and ensuring consistency.
+
+## Related issues
+- [#8703](https://github.com/sktime/sktime/issues/8703)
+
+## Metadata
+- Source: github
+- Repo: sktime/sktime
+- URL: https://github.com/sktime/sktime/pull/8737
+- Merged: 2025-08-24T12:46:02Z
