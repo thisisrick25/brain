@@ -298,17 +298,37 @@ ${
 
 // --- Main ---
 
+// Helper to generate consistent filename
+function generateFilename(pr) {
+  // owner-repo-id.mdx (e.g. "google-gemini-cli-123.mdx")
+  const safeRepo = pr.repo.replace(/[\/\.]/g, "-").toLowerCase();
+  return `${safeRepo}-${pr.id}.mdx`;
+}
+
+// Helper to retry async functions
+async function withRetry(fn, retries = 3, delay = 2000) {
+  for (let i = 0; i < retries; i++) {
+    try {
+      return await fn();
+    } catch (error) {
+      if (i === retries - 1) throw error;
+      console.warn(`Attempt ${i + 1} failed, retrying in ${delay}ms...`);
+      await sleep(delay);
+    }
+  }
+}
+
 async function main() {
   const allContributions = [];
 
   // Parallel fetching of PR/MR metadata
   console.log("Fetching collection data...");
   const [githubResults, gitlabResults] = await Promise.allSettled([
-    fetchGithubPRs().catch((e) => {
+    withRetry(() => fetchGithubPRs()).catch((e) => {
       console.warn("GitHub fetch failed:", e.message);
       return [];
     }),
-    fetchGitLabMRs().catch((e) => {
+    withRetry(() => fetchGitLabMRs()).catch((e) => {
       console.warn("GitLab fetch failed:", e.message);
       return [];
     }),
@@ -335,10 +355,7 @@ async function main() {
       continue;
     }
 
-    // Generate slug-friendly filename: owner-repo-id.mdx
-    // e.g. "google-gemini-cli-123.mdx"
-    const safeRepo = pr.repo.replace(/[\/\.]/g, "-").toLowerCase(); // replace / and . with -
-    const fileName = `${safeRepo}-${pr.id}.mdx`;
+    const fileName = generateFilename(pr);
     const filePath = path.join(contributionsDir, fileName);
 
     if (fs.existsSync(filePath)) {
@@ -353,7 +370,9 @@ async function main() {
     );
 
     try {
-      const summaryMDX = await generateSummary(pr);
+      // Wrap generation in retry logic
+      const summaryMDX = await withRetry(() => generateSummary(pr), 3, 2000);
+
       if (summaryMDX) {
         fs.writeFileSync(filePath, summaryMDX);
         console.log(`✔ Saved ${fileName}`);
@@ -362,7 +381,7 @@ async function main() {
       // Small delay to avoid rate limits
       await sleep(1000);
     } catch (error) {
-      console.error(`✘ Failed to generate ${fileName}`);
+      console.error(`✘ Failed to generate ${fileName} after retries.`);
     }
     count++;
   }
