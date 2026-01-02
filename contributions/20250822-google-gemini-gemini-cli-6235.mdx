@@ -1,0 +1,35 @@
+---
+id: 6235
+repo: "google-gemini/gemini-cli"
+title: "fix(core): correctly consolidate multi-part text content"
+url: "https://github.com/google-gemini/gemini-cli/pull/6235"
+mergedAt: "2025-08-22T18:20:30Z"
+relatedIssues: ["https://github.com/google-gemini/gemini-cli/issues/4053"]
+summary: "This PR fixes an issue where multi-part text content was incorrectly consolidated during streaming responses in Gemini chat, ensuring proper text merging by updating part type checks and append logic."
+---
+
+## What was done
+- Refactored the `consolidateStreamingContent` logic in `packages/core/src/core/geminiChat.ts` to correctly append new text parts to the *last* existing text part of multi-part content.
+- Introduced two new private helper methods: `isFirstPartText` and `isLastPartText`, to precisely identify whether the first or last part of a `Content` object is a pure text part.
+- Enhanced `isLastPartText` to include checks for `model` role and explicitly exclude non-text content types such as `functionCall`, `functionResponse`, `inlineData`, `fileData`, and `thought`.
+- Updated `isFirstPartText` with similar explicit checks to ensure the first part is exclusively text and not other content types.
+- Replaced the simpler `isTextContent` checks with the new, more precise `isFirstPartText` and `isLastPartText` in the consolidation logic.
+
+## Impact
+- Resolves incorrect text concatenation issues in streaming multi-part responses, ensuring text from different content chunks merges seamlessly.
+- Improves the reliability and accuracy of handling mixed content types within Gemini chat interactions.
+- Enhances the robustness of the content consolidation mechanism for streaming generative AI responses.
+
+## Technical details
+- The core change involves modifying how `Content` objects, especially in streaming scenarios, append new `Part` data within the `GeminiChat` class.
+- The `consolidateStreamingContent` method now checks the `isLastPartText` of the accumulated content and `isFirstPartText` of the new content to determine if simple text concatenation is appropriate, specifically targeting the last text part.
+- The helper methods `isFirstPartText` and `isLastPartText` leverage TypeScript type guards and explicit property checks to differentiate pure text parts from other structured parts (e.g., `functionCall`, `inlineData`). This prevents misidentifying parts that might have a `text` property but are semantically different.
+
+## Related issues
+- [#4053](https://github.com/google-gemini/gemini-cli/issues/4053)
+
+## Metadata
+- Source: github
+- Repo: google-gemini/gemini-cli
+- URL: https://github.com/google-gemini/gemini-cli/pull/6235
+- Merged: 2025-08-22T18:20:30Z

@@ -1,0 +1,36 @@
+---
+id: 329
+repo: "brainglobe/brainglobe.github.io"
+title: "Built API docs from the docstrings using Sphinx+autodocs"
+url: "https://github.com/brainglobe/brainglobe.github.io/pull/329"
+mergedAt: "2025-08-27T09:31:42Z"
+relatedIssues: ["https://github.com/brainglobe/brainglobe.github.io/issues/4"]
+summary: "Implemented an automated system using Sphinx and `autodoc` to generate API documentation directly from docstrings of Brainglobe's external Python libraries, starting with `brainglobe-atlasapi`."
+---
+
+## What was done
+- Introduced `fetch_external.py` to clone/update external Brainglobe repositories (e.g., `brainglobe-atlasapi`) required for documentation.
+- Updated Sphinx configuration (`docs/source/conf.py`) to include external module paths and enable `autodoc`, `autosummary`, and `coverage` extensions.
+- Created `docs/source/api/brainglobe_atlasapi.rst` to generate API reference documentation for `brainglobe-atlasapi`'s `BrainGlobeAtlas` and `show_atlases` members.
+- Integrated the new API reference into the `brainglobe-atlasapi` documentation index (`docs/source/documentation/brainglobe-atlasapi/index.md`).
+- Modified the GitHub Actions workflow for documentation deployment (`docs_build_and_deploy.yml`) to include Python setup (3.11) and execution of `fetch_external.py`.
+- Removed temporary documentation files and associated configurations.
+
+## Impact
+- Provides continuously updated and consistent API reference documentation for Brainglobe libraries directly from their source code.
+- Automates the process of fetching and integrating external project documentation, streamlining maintenance.
+- Enhances developer experience by simplifying documentation generation for core Brainglobe components.
+
+## Technical details
+- Leverages Sphinx `autodoc` and `autosummary` to parse Python docstrings and generate reStructuredText (`.rst`) for API reference.
+- Uses a custom Python script (`fetch_external.py`) for managing external Git repositories as local dependencies for Sphinx.
+- Integrates documentation build steps within GitHub Actions for automated CI/CD, ensuring consistent documentation builds.
+
+## Related issues
+- [#4](https://github.com/brainglobe/brainglobe.github.io/issues/4)
+
+## Metadata
+- Source: github
+- Repo: brainglobe/brainglobe.github.io
+- URL: https://github.com/brainglobe/brainglobe.github.io/pull/329
+- Merged: 2025-08-27T09:31:42Z

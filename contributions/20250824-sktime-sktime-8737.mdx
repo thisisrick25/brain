@@ -1,0 +1,33 @@
+---
+id: 8737
+repo: "sktime/sktime"
+title: "[ENH] add tests for TSC `evaluate` parallelization backends "
+url: "https://github.com/sktime/sktime/pull/8737"
+mergedAt: "2025-08-24T12:46:02Z"
+relatedIssues: ["https://github.com/sktime/sktime/issues/8703"]
+summary: "This PR enhances `sktime`'s test suite by parameterizing the `evaluate` function's parallel backend tests to cover various configurations, ensuring robust validation of parallel execution."
+---
+
+## What was done
+- Imported `_get_parallel_test_fixtures` to dynamically retrieve available parallel backend configurations for testing.
+- Modified the `test_evaluate_parallel_backend` function in `sktime/classification/model_evaluation/tests/test_evaluate.py`.
+- Implemented `pytest.mark.parametrize` to run the parallel backend test for all configured `sktime` parallelization backends (e.g., `loky`, `multiprocessing`).
+- Replaced hardcoded `backend` and `backend_params` in the `evaluate` function call with values dynamically passed by the `parametrize` fixture.
+- Applied a minor style fix to correct mixed line endings in the test file.
+
+## Impact
+- **Developer-facing:** Significantly improves the test coverage and reliability for parallel execution capabilities within the `evaluate` function, ensuring that various parallel backends function correctly. This helps maintain the stability and correctness of `sktime`'s parallel processing features for Time Series Classification (TSC) model evaluation.
+- No user-facing breaking changes or new features were introduced.
+
+## Technical details
+- The changes leverage `pytest.mark.parametrize` for efficient and comprehensive testing of different parallel backend configurations.
+- It utilizes `sktime.utils.parallel._get_parallel_test_fixtures` to centralize and manage parallel backend test setups, promoting code reusability and maintainability within the test suite.
+
+## Related issues
+- [#8703](https://github.com/sktime/sktime/issues/8703)
+
+## Metadata
+- Source: github
+- Repo: sktime/sktime
+- URL: https://github.com/sktime/sktime/pull/8737
+- Merged: 2025-08-24T12:46:02Z

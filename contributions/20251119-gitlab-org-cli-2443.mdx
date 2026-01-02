@@ -1,0 +1,34 @@
+---
+id: 2443
+repo: "gitlab-org/cli"
+title: "feat(token-cache): add token-cache commands for GitLab Agent tokens"
+url: "https://gitlab.com/gitlab-org/cli/-/merge_requests/2443"
+mergedAt: "2025-11-19T09:29:19Z"
+relatedIssues: ["https://gitlab.com/gitlab-org/cli/-/issues/7953"]
+summary: "Introduces new `glab cluster agent token-cache` commands to provide users with visibility and control over cached GitLab Agent tokens, including listing and clearing options."
+---
+
+## What was done
+- Implemented the new `glab cluster agent token-cache` command group.
+- Added `glab cluster agent token-cache list` to display cached agent tokens from keyring and filesystem, with filtering options.
+- Added `glab cluster agent token-cache clear` to remove cached agent tokens, including an option to revoke them on the GitLab server.
+- Both `list` and `clear` commands support `--agent` for filtering by agent IDs, and `--keyring`/`--filesystem` to specify cache sources.
+- The `clear` command's revocation is enabled by default via the `--revoke` flag.
+
+## Impact
+- Users can now inspect and manage previously opaque cached GitLab Agent tokens used by the Kubernetes credential plugin.
+- Enhanced control and visibility over cached credentials improves user experience and security management.
+- No breaking changes were introduced.
+
+## Technical details
+- The new commands interact with both keyring and filesystem caches for token storage.
+- The `clear` command integrates with the GitLab server for token revocation, providing a complete management lifecycle.
+
+## Related issues
+- [#7953](https://gitlab.com/gitlab-org/cli/-/issues/7953)
+
+## Metadata
+- Source: gitlab
+- Repo: gitlab-org/cli
+- URL: https://gitlab.com/gitlab-org/cli/-/merge_requests/2443
+- Merged: 2025-11-19T09:29:19Z
