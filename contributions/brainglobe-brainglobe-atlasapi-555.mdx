@@ -1,0 +1,35 @@
+---
+id: 555
+repo: "brainglobe/brainglobe-atlasapi"
+title: "Remove all references to the transformation to the BrainGlobe orientation"
+url: "https://github.com/brainglobe/brainglobe-atlasapi/pull/555"
+mergedAt: "2025-04-30T12:24:22Z"
+relatedIssues: ["https://github.com/brainglobe/brainglobe-atlasapi/issues/547"]
+summary: "This PR simplifies atlas generation and handling by removing dynamic orientation transformations and consistently enforcing the BrainGlobe ASR orientation."
+---
+
+## What was done
+- Removed `orientation` and `transformation_mat` parameters from `generate_metadata_dict`.
+- Eliminated storage of `"trasform_to_bg"` and `"orientation"` fields from atlas metadata (`metadata.json`).
+- Removed runtime reorientation logic for stacks and meshes within `wrapup_atlas_from_data`.
+- Enforced that input atlas data for generation must already be in `ATLAS_ORIENTATION` (ASR).
+- Hardcoded `ATLAS_ORIENTATION` (ASR) as the assumed orientation for `AnatomicalSpace` within the `Atlas` class.
+- Updated the `METADATA_TEMPLATE` to no longer include the `orientation` field.
+
+## Impact
+- **Users:** Atlas generation now requires input data (stacks, meshes) to be pre-oriented to the `ASR` (Anterior-Superior-Right) convention. The `orientation` and `trasform_to_bg` fields will no longer be present in the generated `metadata.json`.
+- **Developers:** The atlas generation codebase is simplified by removing complex orientation transformation logic. The `Atlas` class now consistently assumes `ATLAS_ORIENTATION` (ASR), streamlining internal spatial handling.
+
+## Technical details
+- The `brainglobe_space` library's functionality for runtime transformations is no longer used during atlas packaging.
+- Metadata generation functions (`generate_metadata_dict`) were modified to prune orientation-related fields, promoting a single, consistent orientation.
+- The `Atlas` core class now directly references a constant `ATLAS_ORIENTATION` for its spatial properties, removing reliance on metadata for this fundamental aspect.
+
+## Related issues
+- [#547](https://github.com/brainglobe/brainglobe-atlasapi/issues/547)
+
+## Metadata
+- Source: github
+- Repo: brainglobe/brainglobe-atlasapi
+- URL: https://github.com/brainglobe/brainglobe-atlasapi/pull/555
+- Merged: 2025-04-30T12:24:22Z
