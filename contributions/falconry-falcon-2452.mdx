@@ -1,0 +1,33 @@
+---
+id: 2452
+repo: "falconry/falcon"
+title: "chore(sdist): migrate `project.license` to SPDX expression"
+url: "https://github.com/falconry/falcon/pull/2452"
+mergedAt: "2025-11-11T20:33:23Z"
+relatedIssues: ["https://github.com/falconry/falcon/issues/2451"]
+summary: "Updated `pyproject.toml` to use the SPDX-compliant `Apache-2.0` license expression, adjusted license file declarations, and upgraded the minimum `setuptools` version."
+---
+
+## What was done
+- Migrated the project's license declaration in `pyproject.toml` to the SPDX-compliant "Apache-2.0" format.
+- Consolidated the `license-files = ["LICENSE"]` declaration under the `[project]` section in `pyproject.toml`.
+- Updated the minimum `setuptools` version requirement in `pyproject.toml` to `77.0.3`.
+- Removed a redundant "License :: OSI Approved :: Apache Software License" classifier from `pyproject.toml`.
+
+## Impact
+- Improves adherence to modern Python packaging standards (PEP 621/639) for license metadata.
+- Enhances tool compatibility and accuracy for project build and distribution metadata.
+- No functional changes to the Falcon framework itself.
+
+## Technical details
+- Modifications were made exclusively within the `pyproject.toml` file.
+- Changes align with best practices for declaring project metadata, specifically regarding license expressions and build system requirements.
+
+## Related issues
+- [#2451](https://github.com/falconry/falcon/issues/2451)
+
+## Metadata
+- Source: github
+- Repo: falconry/falcon
+- URL: https://github.com/falconry/falcon/pull/2452
+- Merged: 2025-11-11T20:33:23Z

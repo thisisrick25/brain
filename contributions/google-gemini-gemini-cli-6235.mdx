@@ -1,0 +1,36 @@
+---
+id: 6235
+repo: "google-gemini/gemini-cli"
+title: "fix(core): correctly consolidate multi-part text content"
+url: "https://github.com/google-gemini/gemini-cli/pull/6235"
+mergedAt: "2025-08-22T18:20:30Z"
+relatedIssues: ["https://github.com/google-gemini/gemini-cli/issues/4053"]
+summary: "This PR fixes an issue where multi-part text content in streaming responses was incorrectly consolidated by ensuring new text is appended to the last existing text part and improving the identification of pure text content."
+---
+
+## What was done
+- Refactored the content consolidation logic in `GeminiChat` to correctly handle multi-part streaming responses.
+- Changed text appending from the first part of existing content to the last text part.
+- Introduced `isFirstPartText` and `isLastPartText` helper methods to precisely check if the first or last content part is pure text.
+- Enhanced `isLastPartText` to validate only model-generated content and explicitly exclude non-text content types like `functionCall`, `inlineData`, or `thought`.
+- Updated `isFirstPartText` to also explicitly exclude non-text content types for accurate identification.
+
+## Impact
+- Resolves incorrect concatenation of text within multi-part streaming outputs from the Gemini model.
+- Improves the reliability and accuracy of text merging, especially when responses contain mixed content types (e.g., text interwoven with images or tool calls).
+- Prevents text from being erroneously merged into non-text content parts.
+- No breaking changes are introduced.
+
+## Technical details
+- Modifications were made in `packages/core/src/core/geminiChat.ts`.
+- The core logic update involves changing how `consolidatedOutputContents` and `lastHistoryEntry` are modified to append text to `parts[parts.length - 1]` instead of `parts[0]`.
+- New type predicate functions `isFirstPartText` and `isLastPartText` were added and refined to ensure strict validation of pure text parts, filtering out other content types.
+
+## Related issues
+- [#4053](https://github.com/google-gemini/gemini-cli/issues/4053)
+
+## Metadata
+- Source: github
+- Repo: google-gemini/gemini-cli
+- URL: https://github.com/google-gemini/gemini-cli/pull/6235
+- Merged: 2025-08-22T18:20:30Z

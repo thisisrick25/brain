@@ -1,0 +1,36 @@
+---
+id: 329
+repo: "brainglobe/brainglobe.github.io"
+title: "Built API docs from the docstrings using Sphinx+autodocs"
+url: "https://github.com/brainglobe/brainglobe.github.io/pull/329"
+mergedAt: "2025-08-27T09:31:42Z"
+relatedIssues: ["https://github.com/brainglobe/brainglobe.github.io/issues/4"]
+summary: "This PR establishes an automated process for generating API documentation from Python docstrings for Brainglobe projects, starting with `brainglobe-atlasapi`, using Sphinx and its autodoc extensions."
+---
+
+## What was done
+- Introduced `fetch_external.py` to clone or pull specified external Brainglobe repositories (e.g., `brainglobe-atlasapi`) into a local `external/` directory.
+- Configured Sphinx (`docs/source/conf.py`) to include these fetched external repositories in `sys.path` and enabled `sphinx.ext.autodoc`, `sphinx.ext.autosummary`, and `sphinx.ext.coverage` extensions.
+- Created and integrated reStructuredText (`.rst`) based API reference pages for `brainglobe-atlasapi` into the documentation, utilizing Sphinx's `automodule` directive to extract content from docstrings.
+- Updated the GitHub Actions workflow for documentation builds to set up Python (v3.11) and execute `fetch_external.py` before the Sphinx build process.
+- Removed obsolete documentation files and configurations, including a `pip install` command from `fetch_external.py` and the `docs/source/documentation/test/index.rst` file.
+
+## Impact
+- Provides automatically generated and always up-to-date API documentation for key Brainglobe Python packages, beginning with `brainglobe-atlasapi`.
+- Enhances developer experience by centralizing and automating the API documentation generation directly from source code docstrings.
+- Ensures documentation remains synchronized with code changes across multiple Brainglobe repositories with minimal manual intervention.
+
+## Technical details
+- Leverages Sphinx as the primary documentation generator.
+- Utilizes Sphinx's `autodoc` and `autosummary` extensions to automatically parse Python docstrings and generate API reference.
+- Employs `fetch_external.py` for dynamic retrieval and updating of external project repositories, making their source code available for documentation.
+- Integrates these steps into a GitHub Actions workflow for continuous integration and deployment of the documentation website.
+
+## Related issues
+- [#4](https://github.com/brainglobe/brainglobe.github.io/issues/4)
+
+## Metadata
+- Source: github
+- Repo: brainglobe/brainglobe.github.io
+- URL: https://github.com/brainglobe/brainglobe.github.io/pull/329
+- Merged: 2025-08-27T09:31:42Z

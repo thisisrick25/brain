@@ -1,0 +1,36 @@
+---
+id: 2451
+repo: "gitlab-org/cli"
+title: "feat(members): add commands to manage project members"
+url: "https://gitlab.com/gitlab-org/cli/-/merge_requests/2451"
+mergedAt: "2025-10-28T12:06:40Z"
+relatedIssues: ["https://gitlab.com/gitlab-org/cli/-/issues/7299"]
+summary: "Adds new `glab repo members` commands to manage project members, allowing users to add and remove members with configurable access levels and expiration dates."
+---
+
+## What was done
+- Implemented `glab repo members add` command to add users to a project.
+- Implemented `glab repo members remove` command to remove users from a project.
+- The `add` command supports adding members by username or user ID, specifying access levels (guest, reporter, developer, maintainer, owner), and optional expiration dates.
+- The `remove` command supports removing members by username or user ID.
+- Extensive unit tests, HTTP mocking for API interactions, and edge case coverage were added.
+
+## Impact
+- Users can now manage project members (add and remove) directly from the command line using `glab`.
+- Simplifies project administration for CLI users.
+- No breaking changes were introduced.
+
+## Technical details
+- Introduces new subcommands under `glab repo members`.
+- Leverages GitLab API for member management, with HTTP mocking for robust testing.
+- Implements logic to map human-readable access levels to GitLab's numeric permission levels.
+- Designed to handle flexible user input (username or user ID).
+
+## Related issues
+- [#7299](https://gitlab.com/gitlab-org/cli/-/issues/7299)
+
+## Metadata
+- Source: gitlab
+- Repo: gitlab-org/cli
+- URL: https://gitlab.com/gitlab-org/cli/-/merge_requests/2451
+- Merged: 2025-10-28T12:06:40Z

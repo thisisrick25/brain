@@ -1,0 +1,30 @@
+---
+id: 238
+repo: "brainglobe/brainreg"
+title: "[Feature] Specify units for voxel sizes in napari plugin"
+url: "https://github.com/brainglobe/brainreg/pull/238"
+mergedAt: "2025-05-06T09:36:56Z"
+relatedIssues: ["https://github.com/brainglobe/brainreg/issues/223"]
+summary: "This PR enhances the napari plugin by explicitly stating units (micrometers) for voxel size parameters and adding informative tooltips."
+---
+
+## What was done
+- Modified `brainreg/napari/register.py` to update parameter labels and add tooltips.
+- Updated the labels for `z_pixel_um`, `y_pixel_um`, and `x_pixel_um` in the napari plugin's registration interface to explicitly include `(um)` (micrometers).
+- Added comprehensive tooltips for the `z_pixel_um`, `y_pixel_um`, and `x_pixel_um` parameters, explaining their purpose and units.
+
+## Impact
+- **User-facing**: Users of the napari plugin will now see clearer labels for voxel size inputs, explicitly indicating units as micrometers. Hovering over these fields will provide helpful tooltips with additional context.
+- No breaking changes.
+
+## Technical details
+- The changes involve modifying dictionary definitions for `napari_experimental_provide_function` parameters, specifically updating the `label` and adding a new `tooltip` key-value pair for the voxel size inputs.
+
+## Related issues
+- [#223](https://github.com/brainglobe/brainreg/issues/223)
+
+## Metadata
+- Source: github
+- Repo: brainglobe/brainreg
+- URL: https://github.com/brainglobe/brainreg/pull/238
+- Merged: 2025-05-06T09:36:56Z

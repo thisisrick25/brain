@@ -1,0 +1,34 @@
+---
+id: 555
+repo: "brainglobe/brainglobe-atlasapi"
+title: "Remove all references to the transformation to the BrainGlobe orientation"
+url: "https://github.com/brainglobe/brainglobe-atlasapi/pull/555"
+mergedAt: "2025-04-30T12:24:22Z"
+relatedIssues: ["https://github.com/brainglobe/brainglobe-atlasapi/issues/547"]
+summary: "This pull request removes all metadata fields and internal storage for transformation matrices and atlas orientation, ensuring the BrainGlobe Atlas API consistently assumes an \"asr\" orientation, while still reorienting inputs during atlas generation."
+---
+
+## What was done
+- Removed the `orientation` and `transformation_mat` parameters from the `generate_metadata_dict` function.
+- Stopped writing `"orientation"` and `"trasform_to_bg"` keys to the `metadata.json` file during atlas generation.
+- Removed the `orientation` field from the default metadata template in `descriptors.py`.
+- Eliminated the calculation of `transformation_mat` from `wrapup_atlas_from_data` as it is no longer stored.
+- The `Atlas` class now explicitly uses the `ATLAS_ORIENTATION` constant for its internal `origin` and `orientation` properties instead of retrieving them from metadata.
+
+## Impact
+- **For developers:** The atlas generation process is simplified by removing superfluous metadata fields related to orientation and transformations.
+- **For users:** Atlases generated or loaded with this API version will consistently present data in the "asr" (anterior-superior-right) orientation, and their `metadata.json` files will be leaner.
+- **No change to reorientation:** Input stacks and meshes are still reoriented to the "asr" orientation during atlas packaging within `wrapup_atlas_from_data` to ensure consistency.
+
+## Technical details
+- Changes span across `brainglobe_atlasapi/atlas_generation/metadata_utils.py`, `brainglobe_atlasapi/atlas_generation/wrapup.py`, `brainglobe_atlasapi/descriptors.py`, and `brainglobe_atlasapi/core.py`.
+- The `brainglobe_space` library is still utilized for runtime reorientation of data during atlas packaging.
+
+## Related issues
+- [#547](https://github.com/brainglobe/brainglobe-atlasapi/issues/547)
+
+## Metadata
+- Source: github
+- Repo: brainglobe/brainglobe-atlasapi
+- URL: https://github.com/brainglobe/brainglobe-atlasapi/pull/555
+- Merged: 2025-04-30T12:24:22Z

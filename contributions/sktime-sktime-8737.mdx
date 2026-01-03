@@ -1,0 +1,36 @@
+---
+id: 8737
+repo: "sktime/sktime"
+title: "[ENH] add tests for TSC `evaluate` parallelization backends "
+url: "https://github.com/sktime/sktime/pull/8737"
+mergedAt: "2025-08-24T12:46:02Z"
+relatedIssues: ["https://github.com/sktime/sktime/issues/8703"]
+summary: "Enhanced the `evaluate` function's tests for Time Series Classification (TSC) to thoroughly cover various parallelization backend configurations."
+---
+
+## What was done
+- Modified `sktime/classification/model_evaluation/tests/test_evaluate.py` to improve test coverage for parallelization.
+- Integrated `_get_parallel_test_fixtures("estimator")` to dynamically retrieve a list of parallel backend configurations for testing.
+- Updated the `test_evaluate_parallel_backend` method to use `@pytest.mark.parametrize`, allowing it to test `evaluate` across all configured parallelization strategies.
+- Replaced hardcoded `backend` and `backend_params` with dynamic unpacking of backend fixtures within the `evaluate` call.
+- Applied a minor style fix to resolve mixed line endings in the test file.
+
+## Impact
+- **Improved Test Coverage:** Ensures the `evaluate` function's parallel execution mechanism is robust and works correctly across all supported parallelization backends (e.g., loky, joblib).
+- **Increased Stability:** Helps prevent regressions when changes are made to parallel processing utilities or the `evaluate` function itself.
+- **Developer Benefit:** Simplifies the process of adding new parallel backend tests and maintaining existing ones.
+- No breaking changes or direct user-facing changes as this is a test enhancement.
+
+## Technical details
+- Leverages `pytest.mark.parametrize` for efficient data-driven testing.
+- Utilizes `sktime.utils.parallel._get_parallel_test_fixtures` to centralize and provide parallel backend configurations for tests.
+- Employs dictionary unpacking (`**backend`) to dynamically pass backend parameters to the `evaluate` function during testing.
+
+## Related issues
+- [#8703](https://github.com/sktime/sktime/issues/8703)
+
+## Metadata
+- Source: github
+- Repo: sktime/sktime
+- URL: https://github.com/sktime/sktime/pull/8737
+- Merged: 2025-08-24T12:46:02Z
