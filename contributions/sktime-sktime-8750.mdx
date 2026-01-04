@@ -1,0 +1,39 @@
+---
+id: 8750
+repo: "sktime/sktime"
+title: "[ENH] support for neuralforecast new versions"
+url: "https://github.com/sktime/sktime/pull/8750"
+mergedAt: "2026-01-03T22:54:19Z"
+relatedIssues: ["https://github.com/sktime/sktime/issues/8742"]
+summary: "This Pull Request updates the `sktime` `_NeuralForecastAdapter` to ensure compatibility with `neuralforecast` versions `3.0.0` and newer, addressing API changes in model instantiation and parameter handling."
+---
+
+## What was done
+- Implemented version-specific logic within the `_NeuralForecastAdapter` to handle breaking API changes introduced in `neuralforecast v3.0.0+`.
+- Modified the `NeuralForecast` wrapper initialization to pass `models` as a keyword argument when `neuralforecast` is version `3.0.0` or higher.
+- Updated the instantiation of recurrent `neuralforecast` models (RNN, LSTM, GRU) to correctly pass the `input_size` parameter, which became mandatory for these models in `neuralforecast v3.0.0+`.
+- Adjusted the usage of the `h` parameter for consistency with the `neuralforecast v3.0.0+` API.
+- Updated `pyproject.toml` to expand the supported `neuralforecast` version range to `<4.0.0`, while maintaining backward compatibility with older versions.
+- Replaced `pkg_resources.parse_version` with `sktime.utils.dependencies._check_soft_dependencies` for robust version checking.
+
+## Impact
+- Users can now seamlessly use `sktime`'s deep learning forecasters with the latest versions of the `neuralforecast` library (up to `v3.x`), gaining access to new features and improvements.
+- Ensures backward compatibility, preventing issues for users running older `neuralforecast` versions.
+- Enhances the stability and future-proofing of `sktime`'s integration with the `neuralforecast` ecosystem.
+
+## Technical details
+- The `_NeuralForecastAdapter` class now dynamically adjusts its behavior based on the installed `neuralforecast` version, using `_check_soft_dependencies` for conditional execution paths.
+- Key adaptations include:
+    1.  Handling the change in the `NeuralForecast` orchestrator class constructor, where `models` transitioned from a positional argument to a keyword argument.
+    2.  Addressing the `input_size` parameter becoming mandatory for specific individual `neuralforecast` algorithm constructors (e.g., `RNN`, `LSTM`, `GRU`).
+- A `_get_validated_input_size` helper method was introduced to manage `input_size` validation for recurrent models.
+- The `pyproject.toml` entry for `neuralforecast` in the `[dl]` dependency group was updated to `neuralforecast>=1.6.4,<4.0.0; python_version < "3.13"`.
+
+## Related issues
+- [#8742](https://github.com/sktime/sktime/issues/8742)
+
+## Metadata
+- Source: github
+- Repo: sktime/sktime
+- URL: https://github.com/sktime/sktime/pull/8750
+- Merged: 2026-01-03T22:54:19Z
