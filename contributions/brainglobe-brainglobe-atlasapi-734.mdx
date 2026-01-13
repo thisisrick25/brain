@@ -1,0 +1,35 @@
+---
+id: 734
+repo: "brainglobe/brainglobe-atlasapi"
+title: "feat: add validation for duplicate structure acronyms"
+url: "https://github.com/brainglobe/brainglobe-atlasapi/pull/734"
+mergedAt: "2026-01-12T17:31:53Z"
+relatedIssues: ["https://github.com/brainglobe/brainglobe-atlasapi/issues/666"]
+summary: "This PR introduces a new validation step to ensure all brain atlas structure acronyms are unique, preventing issues where duplicate acronyms would break region lookup functionality."
+---
+
+## What was done
+- Added a new validation function `validate_unique_acronyms` to check for duplicate structure acronyms within an atlas.
+- Registered this function into the atlas validation pipeline (`get_all_validation_functions()`).
+- Improved the `validate_unique_acronyms` function to efficiently detect duplicates and include both the acronym and structure name in the error message for better clarity.
+- Added a new test case `test_validate_unique_acronyms_fail` to verify that atlases with duplicate acronyms correctly raise an `AssertionError`.
+- Ensured the error message for duplicate acronyms is sorted for consistent output.
+
+## Impact
+- **Developer-facing:** Atlas developers will now be prevented from submitting or generating atlases with duplicate structure acronyms, which are critical for uniquely identifying regions. This improves data integrity.
+- Prevents potential crashes or incorrect data retrieval when the API attempts to fetch region details using non-unique acronyms as primary keys.
+
+## Technical details
+- A new Python function `validate_unique_acronyms` was added to `brainglobe_atlasapi/atlas_generation/validate_atlases.py`.
+- This function iterates through the atlas structures, using a `set` to track seen acronyms and collecting any duplicates along with their corresponding structure names.
+- An `AssertionError` is raised if duplicates are found, providing a clear list of the problematic acronyms and their names.
+- The validation function is integrated into the existing `get_all_validation_functions` list, ensuring it runs as part of the standard atlas validation process.
+
+## Related issues
+- [#666](https://github.com/brainglobe/brainglobe-atlasapi/issues/666)
+
+## Metadata
+- Source: github
+- Repo: brainglobe/brainglobe-atlasapi
+- URL: https://github.com/brainglobe/brainglobe-atlasapi/pull/734
+- Merged: 2026-01-12T17:31:53Z
