@@ -1,0 +1,32 @@
+---
+id: 2747
+repo: "gitlab-org/cli"
+title: "fix(glrepo): use Host instead of Hostname in FromURL function"
+url: "https://gitlab.com/gitlab-org/cli/-/merge_requests/2747"
+mergedAt: "2026-01-25T10:04:02Z"
+relatedIssues: ["https://gitlab.com/gitlab-org/cli/-/issues/8022"]
+summary: "Fixes an issue in the `FromURL` function by switching from `url.Hostname()` to `u.Host` to correctly preserve port numbers in URLs, particularly for self-hosted GitLab instances using non-standard ports."
+---
+
+## What was done
+- Modified the `FromURL` function in `internal/glrepo/repo.go` to use `u.Host` instead of `u.Hostname()` for parsing URLs.
+- Updated `internal/glrepo/repo_test.go` to include new and modified unit tests that specifically validate correct port preservation in URLs with non-standard ports.
+    - Corrected an existing "GDK with api_host" test case.
+    - Added a new test case for "non-standard port without api_host".
+
+## Impact
+- Resolves a bug where URLs containing non-standard port numbers (e.g., `https://gdk.test:3443/`) had their ports stripped during parsing.
+- Ensures accurate URL processing for users connecting to self-hosted GitLab instances configured with non-standard ports.
+
+## Technical details
+- The change leverages the Go `net/url` package's `u.Host` property, which includes the port number if present, unlike `u.Hostname()` which only returns the hostname.
+- Extensive unit test coverage was added to verify the fix across various URL structures involving non-standard ports.
+
+## Related issues
+- [#8022](https://gitlab.com/gitlab-org/cli/-/issues/8022)
+
+## Metadata
+- Source: gitlab
+- Repo: gitlab-org/cli
+- URL: https://gitlab.com/gitlab-org/cli/-/merge_requests/2747
+- Merged: 2026-01-25T10:04:02Z
