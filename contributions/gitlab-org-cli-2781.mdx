@@ -1,0 +1,30 @@
+---
+id: 2781
+repo: "gitlab-org/cli"
+title: "feat(stack): add git push options support to stack sync command"
+url: "https://gitlab.com/gitlab-org/cli/-/merge_requests/2781"
+mergedAt: "2026-02-04T20:33:46Z"
+relatedIssues: ["https://gitlab.com/gitlab-org/cli/-/issues/8077"]
+summary: "This merge request enhances the `glab stack sync` command by adding support for passing `git push` options."
+---
+
+## What was done
+- The `glab stack sync` command was updated to accept and process command-line options specifically for `git push`.
+- The command's interface was extended to allow users to specify standard `git push` flags.
+
+## Impact
+- Users can now utilize various `git push` options directly with `glab stack sync`, providing greater control over the push operation.
+- This enhancement improves the flexibility and power of the `stack sync` command for advanced Git workflows.
+
+## Technical details
+- The `stack sync` command's argument parsing was modified to identify and capture options intended for the underlying `git push` operation.
+- These captured `git push` options are then correctly forwarded to the Git client when `glab stack sync` executes the push.
+
+## Related issues
+- [#8077](https://gitlab.com/gitlab-org/cli/-/issues/8077)
+
+## Metadata
+- Source: gitlab
+- Repo: gitlab-org/cli
+- URL: https://gitlab.com/gitlab-org/cli/-/merge_requests/2781
+- Merged: 2026-02-04T20:33:46Z
